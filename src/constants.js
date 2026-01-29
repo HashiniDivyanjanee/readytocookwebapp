@@ -1,4 +1,3 @@
-
 export const MENU_ITEMS = [
   {
     id: '1',
@@ -109,29 +108,28 @@ export const CHEFS = [
     id: 1,
     name: 'David Miller',
     role: 'Executive Chef',
-    image: 'https://images.unsplash.com/photo-1583394293214-28dea15ee548?q=80&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1583394060263-f30953a90141?q=80&w=800&auto=format&fit=crop',
     socials: { facebook: '#', instagram: '#' }
   },
   {
     id: 2,
     name: 'Sarah Jenkins',
     role: 'Grill Master',
-    image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?q=80&w=800&auto=format&fit=crop',
     socials: { twitter: '#', instagram: '#' }
   },
   {
     id: 3,
     name: 'Michael Chen',
     role: 'Sous Chef',
-    image: 'https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?q=80&w=600&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?q=80&w=800&auto=format&fit=crop',
     socials: { facebook: '#', twitter: '#' }
   },
   {
     id: 4,
     name: 'Elena Rodriguez',
     role: 'Pastry Chef',
-    image: 'https://images.unsplash.com/photo-1607631568010-a87245c0daf8?q=80&w=600&auto=format&fit=crop',
-    socials: { instagram: '#' }
+    image: 'https://images.unsplash.com/photo-1607631568010-a87245c0daf8?q=80&w=800&auto=format&fit=crop'
   }
 ];
 
@@ -159,29 +157,5 @@ export const TESTIMONIALS = [
     content: 'Consistently great quality. The family platters are massive and the service is always top-notch. Love the smoky aroma.',
     rating: 5,
     image: 'https://i.pravatar.cc/150?u=kasun'
-  },
-  {
-    id: 4,
-    name: 'Priyantha De Silva',
-    role: 'Chef',
-    content: 'As a fellow chef, I appreciate the craft. The pitmasters here really know their wood and smoke profiles.',
-    rating: 5,
-    image: 'https://i.pravatar.cc/150?u=priyantha'
-  },
-  {
-    id: 5,
-    name: 'Anjali Kumari',
-    role: 'Local Resident',
-    content: 'Whenever we have a celebration, this is our go-to place. The chicken wings are simply addictive.',
-    rating: 4,
-    image: 'https://i.pravatar.cc/150?u=anjali'
-  },
-  {
-    id: 6,
-    name: 'Nuwan Perera',
-    role: 'Business Owner',
-    content: 'The lunch specials are fantastic. Fast service and authentic flavors. Keep up the great work!',
-    rating: 5,
-    image: 'https://i.pravatar.cc/150?u=nuwan'
   }
 ];

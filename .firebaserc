@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "greenwaycabpln-app"
+  },
+  "targets": {
+    "greenwaycabpln-app": {
+      "hosting": {
+        "readytocook": [
+          "readytocook"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

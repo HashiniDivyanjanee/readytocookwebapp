@@ -45,13 +45,13 @@ export const Gallery = ({ fullPage }) => {
          <div className="text-center mb-16 space-y-4">
           <div className="inline-flex items-center space-x-2 bg-[#FF5C00]/10 px-4 py-1.5 rounded-full">
             <span className="w-2 h-2 bg-[#FF5C00] rounded-full animate-pulse"></span>
-            <span className="text-[#FF5C00] font-oswald text-[10px] tracking-[0.3em] uppercase font-black">Our Specialties</span>
+            <span className="text-[#FF5C00] font-oswald text-[10px] tracking-[0.3em] uppercase font-black">Our Gallery</span>
           </div>
           <h2 className="font-oswald text-4xl md:text-6xl text-gray-900 font-black uppercase tracking-tighter leading-none">
-            The <span className="text-[#FF5C00]">Pitmaster's</span> Menu
+            Moments <span className="text-[#FF5C00]">Worth</span> Savoring
           </h2>
           <p className="max-w-xl mx-auto text-gray-500 font-medium text-sm">
-            Hand-selected cuts, seasoned with our secret dry rubs and smoked low and slow for up to 14 hours.
+            From slow-smoked perfection to beautifully plated favorites, explore the moments that capture our passion, flavor, and fire one dish at a time.
           </p>
         </div>
         <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">

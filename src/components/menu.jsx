@@ -127,11 +127,14 @@ const MenuItemCard = ({ item, index, addToCart, onViewDetails }) => {
   );
 };
 
-export const Menu = ({ addToCart, onViewDetails, fullPage }) => {
+export const Menu = ({ addToCart, onViewDetails, fullPage, limit, onExploreFullMenu }) => {
   const [activeCategory, setActiveCategory] = useState('Chicken');
   const [animate, setAnimate] = useState(true);
 
-  const filteredItems = MENU_ITEMS.filter(item => item.category === activeCategory);
+  // Filter and then slice if a limit is provided
+  const filteredItems = MENU_ITEMS
+    .filter(item => item.category === activeCategory)
+    .slice(0, limit || MENU_ITEMS.length);
 
   useEffect(() => {
     setAnimate(false);
@@ -206,7 +209,10 @@ export const Menu = ({ addToCart, onViewDetails, fullPage }) => {
 
         {!fullPage && (
           <div className="mt-20 text-center">
-             <button className="group relative px-12 py-5 bg-gray-900 text-white rounded-2xl font-black uppercase text-xs tracking-[0.3em] overflow-hidden transition-all shadow-2xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
+             <button 
+               onClick={onExploreFullMenu}
+               className="group relative px-12 py-5 bg-gray-900 text-white rounded-2xl font-black uppercase text-xs tracking-[0.3em] overflow-hidden transition-all shadow-2xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]"
+             >
                 <span className="relative z-10">Explore Full Menu</span>
                 <div className="absolute inset-0 bg-[#FF5C00] translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
              </button>
