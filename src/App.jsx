@@ -13,6 +13,8 @@ import { CartSidebar } from "./components/CartSidebar";
 import { Contact } from "./components/Contact";
 import { ItemDetails } from "./components/ItemDetails";
 import AdminDashboard from "./components/AdminDashboard";
+import RiderDashboard from "./components/admin/RiderDashboard";
+import { auth, db } from "./firebase";
 const App = () => {
   const [scrolled, setScrolled] = useState(false);
   const [cart, setCart] = useState([]);
@@ -20,6 +22,7 @@ const App = () => {
   const [currentView, setCurrentView] = useState("home");
   const [selectedItem, setSelectedItem] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,13 +41,16 @@ const App = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLoginSuccess = (role) => {
+  // --- Login Success Handler ---
+  const handleLoginSuccess = (role, user) => {
     setUserRole(role);
-    if (role === "admin") {
-      alert("Welcome Admin! Redirecting to Dashboard...");
+    setCurrentUser(user);
+
+    if (role === "rider") {
+      setCurrentView("rider-dashboard");
+    } else if (role === "admin") {
       setCurrentView("admin-dashboard");
     } else {
-      alert("Login Successful!");
       setCurrentView("home");
     }
   };
@@ -92,228 +98,114 @@ const App = () => {
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
+  // --- Rendering ---
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden flex flex-col">
-      <Navbar
-        scrolled={scrolled || currentView !== "home"}
-        cartCount={cartCount}
-        onCartClick={() => setIsCartOpen(true)}
-        currentView={currentView}
-        onNavigate={navigateTo}
-        onLoginSuccess={handleLoginSuccess}
-      />
+    <div className="min-h-screen bg-white">
+      {userRole !== "rider" && (
+        <Navbar
+          scrolled={scrolled || currentView !== "home"}
+          cartCount={cartCount}
+          onCartClick={() => setIsCartOpen(true)}
+          currentView={currentView}
+          onNavigate={navigateTo}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
+      {userRole === "rider" && (
+        <div className="fixed top-0 w-full bg-black p-4 flex justify-between items-center z-[110] border-b border-[#FF5C00]/20">
+          <h1 className="text-white font-black italic uppercase">
+            GRILL <span className="text-[#FF5C00]">RIDER</span>
+          </h1>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-[#FF5C00] text-white px-6 py-1.5 rounded-full text-xs font-black uppercase"
+          >
+            Logout
+          </button>
+        </div>
+      )}
+      <main
+        className={userRole === "rider" ? "pt-24 min-h-screen bg-gray-50" : ""}
+      >
+        {userRole === "rider" && <RiderDashboard userUid={currentUser?.uid || auth.currentUser?.uid}/>}{" "}
+        : (
+        <>
+          {/* Home View */}
+          {currentView === "home" && (
+            <>
+              <Hero />
+              <div className="reveal">
+                <About />
+              </div>
+              <div className="reveal">
+                <Menu
+                  addToCart={addToCart}
+                  onViewDetails={viewItemDetails}
+                  limit={6}
+                  onExploreFullMenu={() => navigateTo("menu")}
+                />
+              </div>
+              <Stats />
+              <div className="reveal">
+                <Chefs />
+              </div>
+              <SpecialOffer />
+              <div className="reveal">
+                <Gallery />
+              </div>
+              <div className="reveal">
+                <Testimonials />
+              </div>
+            </>
+          )}
 
-      <main className="flex-grow animate-[fadeIn_0.5s_ease-out]">
-        {/* Home View */}
-        {currentView === "home" && (
-          <>
-            <Hero />
-            <div className="reveal">
-              <About />
-            </div>
-            <div className="reveal">
+          {/* Admin Dashboard */}
+          {currentView === "admin-dashboard" && userRole === "admin" && (
+            <AdminDashboard />
+          )}
+
+          {/* Menu Full Page */}
+          {currentView === "menu" && (
+            <div className="pt-20">
               <Menu
                 addToCart={addToCart}
                 onViewDetails={viewItemDetails}
-                limit={6}
-                onExploreFullMenu={() => navigateTo("menu")}
+                fullPage
               />
             </div>
-            <Stats />
-            <div className="reveal">
+          )}
+
+          {/* Item Details */}
+          {currentView === "item-details" && selectedItem && (
+            <ItemDetails
+              item={selectedItem}
+              addToCart={addToCart}
+              onBack={() => navigateTo("menu")}
+            />
+          )}
+
+          {/* About Page */}
+          {currentView === "about" && (
+            <div className="pt-20">
+              <About fullPage />
               <Chefs />
             </div>
-            <SpecialOffer />
-            <div className="reveal">
-              <Gallery />
+          )}
+
+          {/* Gallery Page */}
+          {currentView === "gallery" && (
+            <div className="pt-20">
+              <Gallery fullPage />
             </div>
-            <div className="reveal">
-              <Testimonials />
-            </div>
-          </>
-        )}
+          )}
 
-        {/* Admin Dashboard View */}
-        {currentView === "admin-dashboard" && userRole === "admin" && (
-          <AdminDashboard />
-          // <div className="pt-32 pb-20 px-4 max-w-7xl mx-auto">
-          //   <div className="flex justify-between items-center mb-10">
-          //     <h1 className="text-4xl font-black italic uppercase text-black">
-          //       Admin <span className="text-[#FF5C00]">Control Panel</span>
-          //     </h1>
-          //     <button
-          //       onClick={() => navigateTo("home")}
-          //       className="bg-black text-white px-6 py-2 rounded-full font-bold uppercase text-xs"
-          //     >
-          //       Back to Store
-          //     </button>
-          //   </div>
-
-          //   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          //     {/* Product Upload Form (අපි ඊළඟට හදන්නේ මේක) */}
-          //     <div className="lg:col-span-1 bg-gray-50 p-8 rounded-[2.5rem] border border-gray-200 shadow-sm">
-          //       <h2 className="text-xl font-bold mb-6">Add New Item</h2>
-          //       <p className="text-gray-500 text-sm mb-4">
-          //         මෙහිදී ඔබ ඇතුළත් කරන අයිතම කෙළින්ම පාරිභෝගිකයාට පෙනෙනු ඇත.
-          //       </p>
-          //       {/* <AddProduct /> */}
-          //       <div className="h-64 border-2 border-dashed border-gray-300 rounded-3xl flex items-center justify-center text-gray-400">
-          //         Form goes here
-          //       </div>
-          //     </div>
-
-          //     {/* Status/Analytics Placeholder */}
-          //     <div className="lg:col-span-2 space-y-8">
-          //       <div className="bg-[#FF5C00] p-8 rounded-[2.5rem] text-white">
-          //         <h3 className="text-2xl font-bold">Total Sales: $0.00</h3>
-          //         <p className="opacity-80">
-          //           ඔබගේ අලුත් Firestore Database එකට සාර්ථකව සම්බන්ධ වී ඇත.
-          //         </p>
-          //       </div>
-          //       <div className="bg-white border border-gray-200 p-8 rounded-[2.5rem] shadow-sm">
-          //         <h3 className="text-xl font-bold mb-4">Recent Products</h3>
-          //         <p className="text-gray-400 italic">
-          //           No products uploaded yet.
-          //         </p>
-          //       </div>
-          //     </div>
-          //   </div>
-          // </div>
-        )}
-
-        {/* Other Views... (menu, item-details, etc. කලින් වගේම තියන්න) */}
-        {currentView === "menu" && (
-          <div className="pt-20">
-            <Menu
-              addToCart={addToCart}
-              onViewDetails={viewItemDetails}
-              fullPage
-            />
-          </div>
-        )}
-
-        {currentView === "item-details" && selectedItem && (
-          <ItemDetails
-            item={selectedItem}
-            addToCart={addToCart}
-            onBack={() => navigateTo("menu")}
-          />
-        )}
-
-        {currentView === "about" && (
-          <div className="pt-20">
-            <About fullPage />
-            <Chefs />
-          </div>
-        )}
-
-        {currentView === "gallery" && (
-          <div className="pt-20">
-            <Gallery fullPage />
-          </div>
-        )}
-
-        {currentView === "contact" && <Contact />}
+          {/* Contact Page */}
+          {currentView === "contact" && <Contact />}
+        </>
+        )
       </main>
 
-      <Footer />
-
-      {/* Mobile Bottom Navigation App Dock */}
-      <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] bg-black/90 backdrop-blur-2xl rounded-[2.5rem] p-3 flex justify-between items-center z-[55] shadow-2xl border border-white/10 safe-bottom">
-        <button
-          onClick={() => navigateTo("home")}
-          className={`flex-1 flex flex-col items-center space-y-1 ${currentView === "home" ? "text-[#FF5C00]" : "text-gray-500"}`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-          </svg>
-          <span className="text-[8px] font-bold uppercase tracking-widest">
-            Home
-          </span>
-        </button>
-        <button
-          onClick={() => navigateTo("menu")}
-          className={`flex-1 flex flex-col items-center space-y-1 ${currentView === "menu" ? "text-[#FF5C00]" : "text-gray-500"}`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-            <path d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" />
-          </svg>
-          <span className="text-[8px] font-bold uppercase tracking-widest">
-            Menu
-          </span>
-        </button>
-        <button
-          onClick={() => setIsCartOpen(true)}
-          className="relative -top-10 bg-[#FF5C00] w-16 h-16 rounded-full flex items-center justify-center text-white shadow-[0_15px_30px_rgba(255,92,0,0.4)] border-4 border-black active:scale-90 transition-transform"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-7 w-7"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2.5}
-              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-            />
-          </svg>
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-white text-[#FF5C00] text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-lg">
-              {cartCount}
-            </span>
-          )}
-        </button>
-        <button
-          onClick={() => navigateTo("gallery")}
-          className={`flex-1 flex flex-col items-center space-y-1 ${currentView === "gallery" ? "text-[#FF5C00]" : "text-gray-500"}`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <span className="text-[8px] font-bold uppercase tracking-widest">
-            Gallery
-          </span>
-        </button>
-        <button
-          onClick={() => navigateTo("contact")}
-          className={`flex-1 flex flex-col items-center space-y-1 ${currentView === "contact" ? "text-[#FF5C00]" : "text-gray-500"}`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-          </svg>
-          <span className="text-[8px] font-bold uppercase tracking-widest">
-            Call
-          </span>
-        </button>
-      </div>
+      {userRole !== "rider" && <Footer />}
 
       <CartSidebar
         isOpen={isCartOpen}

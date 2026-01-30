@@ -183,15 +183,11 @@ const AdminDashboard = () => {
 const handleRiderUpload = async (riderData) => {
   setLoading(true);
   try {
-    // 1. Authentication එකේ User සාදා ගැනීම 
-    // Password එක ලෙස රයිඩර්ගේ phone number එක භාවිතා කිරීම ආරක්ෂිතයි (පසුව වෙනස් කළ හැක)
     const tempPassword = riderData.phone || "rider123"; 
     
     const res = await createUserWithEmailAndPassword(auth, riderData.email, tempPassword);
     const uid = res.user.uid;
 
-    // 2. ඔබ ඉල්ලූ නිශ්චිත Path එකට දත්ත සේව් කිරීම
-    // data (doc) -> users (collection) -> users (doc) -> users (collection) -> uid (doc)
     await setDoc(doc(db, "data", "users", "users", uid), {
       uid: uid,
       name: riderData.name,
@@ -203,8 +199,8 @@ const handleRiderUpload = async (riderData) => {
       createdAt: serverTimestamp(),
     });
 
-    alert(`Rider Created Successfully! Initial Password is: ${tempPassword}`);
-    setAdminView("overview");
+  alert("Rider created! Note: You have been logged out for security. Please log in again as Admin.");
+    window.location.reload();
   } catch (err) {
     console.error("Auth & Firestore Error: ", err);
     alert("Error: " + err.message);

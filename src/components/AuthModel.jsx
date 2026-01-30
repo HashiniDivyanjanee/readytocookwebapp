@@ -14,41 +14,40 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
   if (!isOpen) return null;
 
+
 const handleAuth = async (e) => {
-    e.preventDefault();
-    try {
-      if (isSignUp) {
-        const res = await createUserWithEmailAndPassword(auth, email, password);
-
-        await setDoc(doc(db, "data", "users", "users", res.user.uid), {
-          uid: res.user.uid,
-          name: name,
-          email: email,
-          role: "customer", 
-        });
-
-        alert("Account Created Successfully!");
-        onLoginSuccess("customer");
-      } else {
-        const res = await signInWithEmailAndPassword(auth, email, password);
-        
-        const userDocRef = doc(db, "data", "users", "users", res.user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          console.log("Firestore Role Found:", userData.role);
-          onLoginSuccess(userData.role);
-        } else {
-          onLoginSuccess("customer");
-        }
-      }
+  e.preventDefault();
+  try {
+    if (isSignUp) {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, "data", "users", "users", res.user.uid), {
+        uid: res.user.uid,
+        name: name,
+        email: email,
+        role: "customer",
+      });
+      alert("Account Created Successfully!");
       onClose();
-    } catch (err) {
-      console.error("Auth Error: ", err);
-      alert(err.message);
+      onLoginSuccess("customer", res.user);
+    } else {
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      const userDocRef = doc(db, "data", "users", "users", res.user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const role = userDoc.data().role;
+        onClose();
+        onLoginSuccess(role, res.user);
+      } else {
+        onClose();
+        onLoginSuccess("customer", res.user);
+      }
     }
-  };
+  } catch (err) {
+    console.error("Auth Error: ", err);
+    alert(err.message);
+  }
+};
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
