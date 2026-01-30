@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, storage } from "../firebase";
+import { auth, db, storage } from "../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
   collection,
@@ -9,7 +9,7 @@ import {
   onSnapshot,
   doc,
   updateDoc,
-  serverTimestamp,
+  serverTimestamp,setDoc
 } from "firebase/firestore";
 
 import ProductForm from "./admin/ProductForm";
@@ -20,6 +20,7 @@ import ManageOffers from "./admin/ManageOffers";
 import ManageGallery from "./admin/ManageGallery";
 import GalleryForm from "./admin/GalleryForm";
 import RiderForm from "./admin/RiderForm";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const AdminDashboard = () => {
   const [adminView, setAdminView] = useState("overview");
@@ -179,22 +180,38 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
-  const handleRiderUpload = async (riderData) => {
-    setLoading(true);
-    try {
-      await addDoc(collection(db, "riders"), {
-        ...riderData,
-        role: "rider",
-        createdAt: serverTimestamp(),
-        status: "active",
-      });
-      alert("Rider added successfully to Users collection!");
-      setAdminView("overview");
-    } catch (err) {
-      alert("Error adding rider: " + err.message);
-    }
+const handleRiderUpload = async (riderData) => {
+  setLoading(true);
+  try {
+    // 1. Authentication එකේ User සාදා ගැනීම 
+    // Password එක ලෙස රයිඩර්ගේ phone number එක භාවිතා කිරීම ආරක්ෂිතයි (පසුව වෙනස් කළ හැක)
+    const tempPassword = riderData.phone || "rider123"; 
+    
+    const res = await createUserWithEmailAndPassword(auth, riderData.email, tempPassword);
+    const uid = res.user.uid;
+
+    // 2. ඔබ ඉල්ලූ නිශ්චිත Path එකට දත්ත සේව් කිරීම
+    // data (doc) -> users (collection) -> users (doc) -> users (collection) -> uid (doc)
+    await setDoc(doc(db, "data", "users", "users", uid), {
+      uid: uid,
+      name: riderData.name,
+      email: riderData.email,
+      phone: riderData.phone,
+      vehicleNo: riderData.vehicleNo,
+      role: "rider",
+      status: "active",
+      createdAt: serverTimestamp(),
+    });
+
+    alert(`Rider Created Successfully! Initial Password is: ${tempPassword}`);
+    setAdminView("overview");
+  } catch (err) {
+    console.error("Auth & Firestore Error: ", err);
+    alert("Error: " + err.message);
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-10 px-6 font-sans">
