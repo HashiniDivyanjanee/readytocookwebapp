@@ -1,12 +1,29 @@
 
 import React, { useState } from 'react';
+import AuthModal from './AuthModel';
 
-export const Navbar = ({ scrolled, cartCount, onCartClick, currentView, onNavigate }) => {
+export const Navbar = ({ scrolled, cartCount, onCartClick, currentView, onNavigate, onLoginSuccess }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
 
   const handleNav = (view) => {
     onNavigate(view);
     setIsOpen(false);
+  };
+
+const handleInternalLoginSuccess = (role) => {
+    console.log("Received Role from Firestore:", role); 
+    if (onLoginSuccess) {
+      onLoginSuccess(role);
+    }
+    if (role === 'admin') {
+      onNavigate('admin-dashboard');
+    } else if (role === 'rider') {
+      onNavigate('rider-panel');
+    } else {
+      onNavigate('home');
+    }
+    setShowAuth(false); 
   };
 
   return (
@@ -80,8 +97,8 @@ export const Navbar = ({ scrolled, cartCount, onCartClick, currentView, onNaviga
           </div>
           
           <div className="hidden md:flex items-center space-x-4">
-            <button className="bg-[#FF5C00] text-white px-6 py-2.5 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all transform hover:scale-105 shadow-xl">
-              Book Now
+            <button onClick={() => setShowAuth(true)} className="bg-[#FF5C00] text-white px-6 py-2.5 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-white hover:text-black transition-all transform hover:scale-105 shadow-xl">
+              Sign in
             </button>
           </div>
 
@@ -110,6 +127,12 @@ export const Navbar = ({ scrolled, cartCount, onCartClick, currentView, onNaviga
           <button onClick={() => handleNav('about')} className="text-white font-oswald text-3xl font-bold uppercase tracking-widest">Our Story</button>
           <button onClick={() => handleNav('contact')} className="text-white font-oswald text-3xl font-bold uppercase tracking-widest">Contact</button>
       </div>
+
+     <AuthModal 
+        isOpen={showAuth} 
+        onClose={() => setShowAuth(false)} 
+        onLoginSuccess={handleInternalLoginSuccess}
+      />
     </nav>
   );
 };

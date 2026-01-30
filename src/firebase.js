@@ -1,23 +1,19 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";   
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth } from "firebase/auth";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBypvy25taphD7NtfYruXzYp-RFaqsLNy0",
-  authDomain: "greenwaycabpln-app.firebaseapp.com",
-  projectId: "greenwaycabpln-app",
-  storageBucket: "greenwaycabpln-app.firebasestorage.app",
-  messagingSenderId: "23971546888",
-  appId: "1:23971546888:web:e9e3368272bb0a77de8ebd"
-
+  apiKey: "AIzaSyCDD7dKBZ9LLIjmgP-lMAQaB-BZBVRIIrM",
+  authDomain: "readytocook-32a64.firebaseapp.com",
+  projectId: "readytocook-32a64",
+  storageBucket: "readytocook-32a64.firebasestorage.app",
+  messagingSenderId: "749037036068",
+  appId: "1:749037036068:web:daf34bca0998c3162e6eb1"
 };
 
 const app = initializeApp(firebaseConfig);
-
+export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const db = getFirestore(app);
 

@@ -1,6 +1,5 @@
 {
   "hosting": {
-    "target": "readytocook",
     "public": "dist",
     "ignore": [
       "firebase.json",

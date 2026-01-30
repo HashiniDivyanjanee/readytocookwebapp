@@ -1,0 +1,8 @@
+
+{
+  "name": "Ready to Cook",
+  "description": "A premium, responsive restaurant landing page for a BBQ grill house, featuring menu categories, testimonials, and high-quality food visuals.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
