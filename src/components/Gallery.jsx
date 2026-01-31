@@ -7,7 +7,7 @@ const galleryImages = [
   { id: 3, src: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800', title: 'Prime Cuts', category: 'Ingredients' },
   { id: 4, src: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&q=80&w=800', title: 'The Pitmaster', category: 'People' },
   { id: 5, src: 'https://images.unsplash.com/photo-1514327605112-b887c0e61c0a?auto=format&fit=crop&q=80&w=800', title: 'Slow & Low', category: 'Atmosphere' },
-  { id: 6, src: 'https://images.unsplash.com/photo-1594041680534-e8c8cdebd679?auto=format&fit=crop&q=80&w=800', title: 'Family Table', category: 'Moments' },
+  { id: 6, src: 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&q=80&w=800', title: 'Family Table', category: 'Moments' },
   { id: 7, src: 'https://images.unsplash.com/photo-1541544741938-0af808871cc0?q=80&w=800&auto=format&fit=crop', title: 'The Glow', category: 'Detail' },
   { id: 8, src: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=800&auto=format&fit=crop', title: 'Crispy Finish', category: 'Food' },
 ];

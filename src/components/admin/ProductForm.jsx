@@ -22,9 +22,8 @@ const ProductForm = ({ loading, productData, setProductData, setProductImg, hand
             <option value="Chicken">Chicken</option>
             <option value="Beef">Beef</option>
             <option value="Pork">Pork</option>
-              <option value="Crab">Crab</option>
-            <option value="Fish">Fish</option>
-            <option value="Prawn">Prawn</option>
+              <option value="Sea Food">Sea Food</option>
+           
           </select>
         </div>
         <textarea 

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
-import { About } from "./components/About";
+import { About } from "./components/about";
 import { Menu } from "./components/menu";
-import { Stats } from "./components/Stats";
+import { Stats } from "./components/stats";
 import { Gallery } from "./components/Gallery";
 import { Testimonials } from "./components/Testimonials";
 import { Chefs } from "./components/Chefs";
@@ -124,12 +124,11 @@ const App = () => {
           </button>
         </div>
       )}
-      <main
-        className={userRole === "rider" ? "pt-24 min-h-screen bg-gray-50" : ""}
-      >
-        {userRole === "rider" && <RiderDashboard userUid={currentUser?.uid || auth.currentUser?.uid}/>}{" "}
-        : (
-        <>
+     <main className={userRole === "rider" ? "pt-24 min-h-screen bg-gray-50" : ""}>
+  {userRole === "rider" ? (
+    <RiderDashboard userUid={currentUser?.uid || auth.currentUser?.uid} />
+  ) : (
+    <>
           {/* Home View */}
           {currentView === "home" && (
             <>
@@ -145,11 +144,12 @@ const App = () => {
                   onExploreFullMenu={() => navigateTo("menu")}
                 />
               </div>
+               <SpecialOffer />
               <Stats />
               <div className="reveal">
                 <Chefs />
               </div>
-              <SpecialOffer />
+             
               <div className="reveal">
                 <Gallery />
               </div>
@@ -202,7 +202,7 @@ const App = () => {
           {/* Contact Page */}
           {currentView === "contact" && <Contact />}
         </>
-        )
+        )}
       </main>
 
       {userRole !== "rider" && <Footer />}

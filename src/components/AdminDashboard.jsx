@@ -9,7 +9,8 @@ import {
   onSnapshot,
   doc,
   updateDoc,
-  serverTimestamp,setDoc
+  serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 
 import ProductForm from "./admin/ProductForm";
@@ -141,6 +142,15 @@ const AdminDashboard = () => {
           createdAt: serverTimestamp(),
         });
         alert("Product Added Successfully!");
+
+        setProductData({
+          name: "",
+          price: "",
+          category: "",
+          desc: "",
+        });
+
+        setProductImg(null);
       }
       setAdminView("manage-products");
       setEditingProduct(null);
@@ -180,34 +190,41 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
-const handleRiderUpload = async (riderData) => {
-  setLoading(true);
-  try {
-    const tempPassword = riderData.phone || "rider123"; 
-    
-    const res = await createUserWithEmailAndPassword(auth, riderData.email, tempPassword);
-    const uid = res.user.uid;
 
-    await setDoc(doc(db, "data", "users", "users", uid), {
-      uid: uid,
-      name: riderData.name,
-      email: riderData.email,
-      phone: riderData.phone,
-      vehicleNo: riderData.vehicleNo,
-      role: "rider",
-      status: "active",
-      createdAt: serverTimestamp(),
-    });
+  const handleRiderUpload = async (riderData) => {
+    setLoading(true);
+    try {
+      const tempPassword = riderData.phone || "rider123";
 
-  alert("Rider created! Note: You have been logged out for security. Please log in again as Admin.");
-    window.location.reload();
-  } catch (err) {
-    console.error("Auth & Firestore Error: ", err);
-    alert("Error: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+      const res = await createUserWithEmailAndPassword(
+        auth,
+        riderData.email,
+        tempPassword,
+      );
+      const uid = res.user.uid;
+
+      await setDoc(doc(db, "data", "users", "users", uid), {
+        uid: uid,
+        name: riderData.name,
+        email: riderData.email,
+        phone: riderData.phone,
+        vehicleNo: riderData.vehicleNo,
+        role: "rider",
+        status: "active",
+        createdAt: serverTimestamp(),
+      });
+
+      alert(
+        "Rider created! Note: You have been logged out for security. Please log in again as Admin.",
+      );
+      window.location.reload();
+    } catch (err) {
+      console.error("Auth & Firestore Error: ", err);
+      alert("Error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-10 px-6 font-sans">
@@ -315,7 +332,7 @@ const handleRiderUpload = async (riderData) => {
           />
         )}
 
-        {adminView === "manage-offers" && (
+         {adminView === "manage-offers" && (
           <ManageOffers
             offers={allOffers}
             onEdit={(o) => {

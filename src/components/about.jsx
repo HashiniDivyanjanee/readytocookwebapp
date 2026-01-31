@@ -33,11 +33,11 @@ export const About = ({ fullPage }) => {
               </h2>
             </div>
             <p className="text-gray-600 leading-relaxed text-sm md:text-base font-medium">
-              At Bar-Be-Cue Grill House, we don't just cook; we honor a legacy of wood-fired mastery. Our techniques have been passed down through generations, ensuring every bite carries the authentic soul of the pit.
+              We provide fresh, high-quality raw meat, carefully cleaned, cut, and prepared with selected spices. Our products are not cooked — they are made ready for you to cook your way at home.
             </p>
             <div className="flex flex-col sm:flex-row justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-4">
               <button className="bg-gray-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-[#FF5C00] transition-all transform hover:scale-105 shadow-xl uppercase tracking-widest text-[10px]">
-                Our History
+                MORE
               </button>
               <button className="border-2 border-gray-900 text-gray-900 px-8 py-4 rounded-xl font-bold hover:bg-gray-900 hover:text-white transition-all transform hover:scale-105 uppercase tracking-widest text-[10px]">
                 Watch Video
@@ -60,17 +60,17 @@ export const About = ({ fullPage }) => {
              <div className="space-y-4 text-center md:text-left">
                 <div className="text-3xl md:text-4xl text-[#FF5C00] font-oswald font-black">01.</div>
                 <h3 className="font-oswald text-xl md:text-2xl font-bold uppercase">Our Mission</h3>
-                <p className="text-gray-500 font-medium text-xs md:text-sm">To provide the highest quality smoked meats using traditional methods while fostering a welcoming community space for all BBQ enthusiasts.</p>
+                <p className="text-gray-500 font-medium text-xs md:text-sm">To deliver fresh, high-quality raw meat, carefully prepared with trusted spices, giving customers the freedom to cook their way at home.</p>
              </div>
              <div className="space-y-4 text-center md:text-left">
                 <div className="text-3xl md:text-4xl text-[#FF5C00] font-oswald font-black">02.</div>
                 <h3 className="font-oswald text-xl md:text-2xl font-bold uppercase">Sustainability</h3>
-                <p className="text-gray-500 font-medium text-xs md:text-sm">We source our wood and ingredients from local, sustainable farms to ensure that our fire keeps burning for generations to come.</p>
+                <p className="text-gray-500 font-medium text-xs md:text-sm">We focus on responsible sourcing, minimal waste, and hygienic preparation practices that respect both quality and the environment.</p>
              </div>
              <div className="space-y-4 text-center md:text-left">
                 <div className="text-3xl md:text-4xl text-[#FF5C00] font-oswald font-black">03.</div>
                 <h3 className="font-oswald text-xl md:text-2xl font-bold uppercase">The Experience</h3>
-                <p className="text-gray-500 font-medium text-xs md:text-sm">It's not just food; it's a multisensory experience. From the sound of the crackling wood to the aroma of hickory smoke.</p>
+                <p className="text-gray-500 font-medium text-xs md:text-sm">From clean cuts to balanced seasoning, we ensure a smooth, reliable experience that brings freshness and confidence to your kitchen.</p>
              </div>
           </div>
         )}

@@ -99,7 +99,7 @@ export const Stats = () => {
             }
             value={5}
             suffix="+"
-            label="Smoke Houses"
+            label="Restaurant"
           />
           <StatCard 
             delay={300}

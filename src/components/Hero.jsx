@@ -30,12 +30,12 @@ export const Hero = () => {
       ))}
 
       {/* Floating Badge - Desktop Only */}
-      <div className="absolute top-1/4 left-10 md:left-20 hidden xl:block z-30 animate-float">
+      {/* <div className="absolute top-1/4 left-10 md:left-20 hidden xl:block z-30 animate-float">
         <div className="bg-[#FF5C00] w-24 h-24 rounded-full flex flex-col items-center justify-center text-center p-3 border-[3px] border-dashed border-white shadow-[0_20px_60px_rgba(255,92,0,0.5)]">
           <span className="font-oswald text-lg text-white font-black leading-none uppercase">BBQ</span>
           <span className="font-oswald text-sm text-white font-bold leading-none uppercase tracking-tighter">Pit Master</span>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="relative z-40 text-center px-6 max-w-7xl mx-auto flex flex-col items-center pt-24 md:pt-32">
@@ -56,21 +56,19 @@ export const Hero = () => {
 
         <div className="text-[#FFD700] font-playfair italic text-lg sm:text-2xl md:text-3xl mb-12 animate-pulse flex items-center space-x-3 sm:space-x-4">
           <span className="h-[1px] w-6 sm:w-10 bg-[#FFD700] hidden xs:block"></span>
-          <span>Authentic Smoky Flavor</span>
+          <span>Thalawathugoda</span>
           <span className="h-[1px] w-6 sm:w-10 bg-[#FFD700] hidden xs:block"></span>
         </div>
 
         <div className="flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-8">
-          <button className="w-full md:w-auto bg-[#FF5C00] text-white px-10 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all transform hover:scale-105 active:scale-95 shadow-2xl">
-            Book a Table
-          </button>
+       
           <div className="text-center md:text-left">
             <h2 className="text-white font-oswald text-lg md:text-2xl font-bold tracking-widest leading-none">
-              CALL US: <span className="text-[#FFD700]">123 3322</span>
+              CALL US: <span className="text-[#FFD700]">+94 77 54 077 67</span>
             </h2>
-            <p className="text-white text-[9px] md:text-xs tracking-[0.4em] font-bold uppercase opacity-60 mt-2">
-              987 Smokehouse Blvd, NY
-            </p>
+            {/* <p className="text-white text-[9px] md:text-xs tracking-[0.4em] font-bold uppercase opacity-60 mt-2">
+             Thalawathugoda
+            </p> */}
           </div>
         </div>
       </div>

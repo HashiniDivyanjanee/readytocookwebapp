@@ -15,13 +15,13 @@ const OfferForm = ({ loading, offerData, setOfferData, setOfferImg, handleSubmit
         />
         <div className="grid grid-cols-2 gap-4">
           <input 
-            type="number" placeholder="Offer Price" className="w-full p-4 border rounded-2xl bg-gray-50" 
+            type="text" placeholder="Offer Price" className="w-full p-4 border rounded-2xl bg-gray-50" 
             value={offerData.offerPrice} onChange={(e) => setOfferData({ ...offerData, offerPrice: e.target.value })} required 
           />
-          <input 
+          {/* <input 
             type="number" placeholder="Discount %" className="w-full p-4 border rounded-2xl bg-gray-50" 
             value={offerData.discount} onChange={(e) => setOfferData({ ...offerData, discount: e.target.value })} 
-          />
+          /> */}
         </div>
         <div className="p-4 border-2 border-dashed border-red-200 rounded-2xl">
           <input type="file" onChange={(e) => setOfferImg(e.target.files[0])} className="text-sm" />
