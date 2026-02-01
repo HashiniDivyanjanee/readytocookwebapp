@@ -56,7 +56,7 @@ export const Hero = () => {
 
         <div className="text-[#FFD700] font-playfair italic text-lg sm:text-2xl md:text-3xl mb-12 animate-pulse flex items-center space-x-3 sm:space-x-4">
           <span className="h-[1px] w-6 sm:w-10 bg-[#FFD700] hidden xs:block"></span>
-          <span>Thalawathugoda</span>
+          <span className='text-5xl'>Thalawathugoda</span>
           <span className="h-[1px] w-6 sm:w-10 bg-[#FFD700] hidden xs:block"></span>
         </div>
 

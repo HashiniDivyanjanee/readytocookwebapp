@@ -117,16 +117,17 @@ const OrderDetailsModal = ({ order, onClose }) => {
           {/* Action Buttons - Stack on mobile */}
           <div className="flex flex-col md:flex-row gap-3 md:gap-4 print:hidden">
             <button 
-              onClick={handlePrint} 
+               onClick={onClose} 
               className="w-full md:flex-1 bg-black text-white py-4 rounded-2xl font-black uppercase italic tracking-widest hover:bg-[#FF5C00] transition-all shadow-lg active:scale-95"
             >
-              Print Invoice
+              Close
             </button>
             <button 
-              onClick={onClose} 
+            onClick={handlePrint} 
+             
               className="w-full md:px-8 border-2 border-gray-200 py-4 rounded-2xl font-bold uppercase text-gray-400 hover:bg-gray-50 transition-all active:scale-95"
             >
-              Close
+               Print Invoice
             </button>
           </div>
         </div>

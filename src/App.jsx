@@ -1,4 +1,11 @@
 import React, { useState, useEffect } from "react";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import { Navbar } from "./components/navbar";
 import { Hero } from "./components/Hero";
 import { About } from "./components/about";
@@ -12,19 +19,23 @@ import { SpecialOffer } from "./components/SpecialOffer";
 import { CartSidebar } from "./components/CartSidebar";
 import { Contact } from "./components/Contact";
 import { ItemDetails } from "./components/ItemDetails";
+import { OfferDetails } from "./components/OfferDetails";
 import AdminDashboard from "./components/AdminDashboard";
 import RiderDashboard from "./components/admin/RiderDashboard";
-import { auth, db } from "./firebase";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { auth } from "./firebase";
+import ScrollToTop from "./components/ScrollToTop";
+
 const App = () => {
   const [scrolled, setScrolled] = useState(false);
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [currentView, setCurrentView] = useState("home");
-  const [selectedItem, setSelectedItem] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Scroll logic for Navbar and Reveals
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -38,36 +49,19 @@ const App = () => {
       });
     };
     window.addEventListener("scroll", handleScroll);
-    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // --- Login Success Handler ---
+  // Login Success Handler
   const handleLoginSuccess = (role, user) => {
     setUserRole(role);
     setCurrentUser(user);
-
-    if (role === "rider") {
-      setCurrentView("rider-dashboard");
-    } else if (role === "admin") {
-      setCurrentView("admin-dashboard");
-    } else {
-      setCurrentView("home");
-    }
+    if (role === "rider") navigate("/rider-dashboard");
+    else if (role === "admin") navigate("/admin-dashboard");
+    else navigate("/");
   };
 
-  const navigateTo = (view) => {
-    setCurrentView(view);
-    setSelectedItem(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const viewItemDetails = (item) => {
-    setSelectedItem(item);
-    setCurrentView("item-details");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
+  // Cart Functions
   const addToCart = (item, quantity = 1) => {
     setCart((prevCart) => {
       const existing = prevCart.find((i) => i.id === item.id);
@@ -84,13 +78,11 @@ const App = () => {
 
   const updateQuantity = (id, delta) => {
     setCart((prevCart) =>
-      prevCart.map((item) => {
-        if (item.id === id) {
-          const newQty = Math.max(1, item.quantity + delta);
-          return { ...item, quantity: newQty };
-        }
-        return item;
-      }),
+      prevCart.map((item) =>
+        item.id === id
+          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
+          : item,
+      ),
     );
   };
 
@@ -100,111 +92,116 @@ const App = () => {
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
-  // --- Rendering ---
   return (
     <div className="min-h-screen bg-white">
+      <ScrollToTop />
       {userRole !== "rider" && (
         <Navbar
-          scrolled={scrolled || currentView !== "home"}
+          scrolled={scrolled || location.pathname !== "/"}
           cartCount={cartCount}
           onCartClick={() => setIsCartOpen(true)}
-          currentView={currentView}
-          onNavigate={navigateTo}
           onLoginSuccess={handleLoginSuccess}
         />
       )}
+
+      {/* Rider Header */}
       {userRole === "rider" && (
         <div className="fixed top-0 w-full bg-black p-4 flex justify-between items-center z-[110] border-b border-[#FF5C00]/20">
           <h1 className="text-white font-black italic uppercase">
             GRILL <span className="text-[#FF5C00]">RIDER</span>
           </h1>
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => {
+              setUserRole(null);
+              navigate("/");
+            }}
             className="bg-[#FF5C00] text-white px-6 py-1.5 rounded-full text-xs font-black uppercase"
           >
             Logout
           </button>
         </div>
       )}
-     <main className={userRole === "rider" ? "pt-24 min-h-screen bg-gray-50" : ""}>
-  {userRole === "rider" ? (
-    <RiderDashboard userUid={currentUser?.uid || auth.currentUser?.uid} />
-  ) : (
-    <>
-          {/* Home View */}
-          {currentView === "home" && (
-            <>
-              <Hero />
-              <div className="reveal">
-                <About />
-              </div>
-              <div className="reveal">
-                <Menu
-                  addToCart={addToCart}
-                  onViewDetails={viewItemDetails}
-                  limit={6}
-                  onExploreFullMenu={() => navigateTo("menu")}
-                />
-              </div>
-               <SpecialOffer />
-              <Stats />
-              <div className="reveal">
+
+      <main
+        className={userRole === "rider" ? "pt-24 min-h-screen bg-gray-50" : ""}
+      >
+        <Routes>
+          {/* Main Website Route */}
+          <Route
+            path="/"
+            element={
+              <>
+                <Hero />
+                <div className="reveal">
+                  <About />
+                </div>
+                <div className="reveal">
+                  <Menu addToCart={addToCart} limit={6} />
+                </div>
+                <SpecialOffer />
+                <Stats />
+                <div className="reveal">
+                  <Chefs />
+                </div>
+                <div className="reveal">
+                  <Gallery />
+                </div>
+                <div className="reveal">
+                  <Testimonials />
+                </div>
+              </>
+            }
+          />
+
+          {/* Individual Pages */}
+          <Route
+            path="/menu"
+            element={<Menu addToCart={addToCart} fullPage />}
+          />
+          <Route
+            path="/about"
+            element={
+              <>
+                <About fullPage />
                 <Chefs />
-              </div>
-             
-              <div className="reveal">
-                <Gallery />
-              </div>
-              <div className="reveal">
-                <Testimonials />
-              </div>
-            </>
-          )}
+              </>
+            }
+          />
+          <Route path="/gallery" element={<Gallery fullPage />} />
+          <Route path="/contact" element={<Contact />} />
 
-          {/* Admin Dashboard */}
-          {currentView === "admin-dashboard" && userRole === "admin" && (
-            <AdminDashboard />
-          )}
+          {/* Dynamic Item Details Page */}
+          <Route
+            path="/item/:id"
+            element={<ItemDetails addToCart={addToCart} />}
+          />
+          <Route
+            path="/offers/:id"
+            element={<OfferDetails addToCart={addToCart} />}
+          />
+          {/* Dashboards */}
+          <Route
+            path="/admin-dashboard"
+            element={
+              userRole === "admin" ? <AdminDashboard /> : <Navigate to="/" />
+            }
+          />
+          <Route
+            path="/rider-dashboard"
+            element={
+              userRole === "rider" ? (
+                <RiderDashboard
+                  userUid={currentUser?.uid || auth.currentUser?.uid}
+                />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
 
-          {/* Menu Full Page */}
-          {currentView === "menu" && (
-            <div >
-              <Menu
-                addToCart={addToCart}
-                onViewDetails={viewItemDetails}
-                fullPage
-              />
-            </div>
-          )}
-
-          {/* Item Details */}
-          {currentView === "item-details" && selectedItem && (
-            <ItemDetails
-              item={selectedItem}
-              addToCart={addToCart}
-              onBack={() => navigateTo("menu")}
-            />
-          )}
-
-          {/* About Page */}
-          {currentView === "about" && (
-            <div >
-              <About fullPage />
-              <Chefs />
-            </div>
-          )}
-
-          {/* Gallery Page */}
-          {currentView === "gallery" && (
-            <div>
-              <Gallery fullPage />
-            </div>
-          )}
-
-          {/* Contact Page */}
-          {currentView === "contact" && <Contact />}
-        </>
-        )}
+          {/* 404 Redirect */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </main>
 
       {userRole !== "rider" && <Footer />}

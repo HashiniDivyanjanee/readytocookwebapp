@@ -11,43 +11,55 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
   if (!isOpen) return null;
 
-
-const handleAuth = async (e) => {
-  e.preventDefault();
-  try {
-    if (isSignUp) {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, "data", "users", "users", res.user.uid), {
-        uid: res.user.uid,
-        name: name,
-        email: email,
-        role: "customer",
-      });
-      alert("Account Created Successfully!");
-      onClose();
-      onLoginSuccess("customer", res.user);
-    } else {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      const userDocRef = doc(db, "data", "users", "users", res.user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (userDoc.exists()) {
-        const role = userDoc.data().role;
-        onClose();
-        onLoginSuccess(role, res.user);
+  const handleAuth = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (isSignUp) {
+        const res = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "data", "users", "users", res.user.uid), {
+          uid: res.user.uid,
+          name: name,
+          email: email,
+          role: "customer",
+        });
+       await setDoc(doc(db, "users", res.user.uid), userData);
+        
+        setSuccessMsg("Account Created Successfully! Redirecting...");
+        
+        setTimeout(() => {
+          onClose();
+          onLoginSuccess("customer", res.user);
+          setSuccessMsg("");
+        }, 2000);
       } else {
-        onClose();
-        onLoginSuccess("customer", res.user);
+        const res = await signInWithEmailAndPassword(auth, email, password);
+        const userDocRef = doc(db, "data", "users", "users", res.user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+     let role = "customer";
+        if (userDoc.exists()) {
+          role = userDoc.data().role;
+        }
+
+        setSuccessMsg(`Welcome Back! Redirecting to ${role} dashboard...`);
+        setTimeout(() => {
+          onClose();
+          onLoginSuccess(role, res.user);
+          setSuccessMsg("");
+        }, 2000);
       }
+    } catch (err) {
+      console.error("Auth Error: ", err);
+      alert(err.message);
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Auth Error: ", err);
-    alert(err.message);
-  }
-};
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">

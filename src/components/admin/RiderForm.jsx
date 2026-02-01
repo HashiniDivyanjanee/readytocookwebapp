@@ -11,7 +11,7 @@ const RiderForm = ({ loading, onAddRider }) => {
 
   return (
     <div className="bg-white p-8 rounded-3xl shadow-lg max-w-2xl mx-auto border border-green-50">
-      <h2 className="text-2xl font-bold mb-6 text-green-600 italic uppercase">Add New <span className="text-black">Rider</span></h2>
+      <h2 className="text-2xl font-bold mb-6 text-[#FF5C00] italic uppercase">Add New <span className="text-black">Rider</span></h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input 
           type="text" placeholder="Rider Full Name" className="w-full p-4 border rounded-2xl bg-gray-50 focus:ring-2 focus:ring-green-500 outline-none" 
@@ -31,7 +31,7 @@ const RiderForm = ({ loading, onAddRider }) => {
             value={rider.vehicleNo} onChange={(e) => setRider({ ...rider, vehicleNo: e.target.value })} required 
           />
         </div>
-        <button type="submit" disabled={loading} className="w-full bg-green-600 text-white py-4 rounded-2xl font-bold uppercase tracking-widest hover:bg-green-700 transition-all">
+        <button type="submit" disabled={loading} className="w-full bg-[#FF5C00] text-white py-4 rounded-2xl font-bold uppercase tracking-widest hover:bg-[#161616] transition-all">
           {loading ? "Registering..." : "Register Rider"}
         </button>
       </form>

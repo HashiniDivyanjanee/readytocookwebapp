@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import AuthModal from "./AuthModel";
+import { Link, useLocation } from "react-router-dom";
 
 export const Navbar = ({
   scrolled,
@@ -16,7 +17,8 @@ export const Navbar = ({
     onNavigate(view);
     setIsOpen(false);
   };
-
+  const isActive = (path) =>
+    location.pathname === path ? "text-[#FF5C00]" : "text-white";
   const handleInternalLoginSuccess = (role) => {
     console.log("Received Role from Firestore:", role);
     if (onLoginSuccess) {
@@ -43,58 +45,47 @@ export const Navbar = ({
           onClick={() => handleNav("home")}
         >
           <div className="text-white font-oswald text-2xl font-black tracking-tighter uppercase leading-[0.8] transition-transform group-hover:scale-110">
-            Ready to Cook <br /> <span className="text-[#FF5C00]">GRILL</span>
+            <Link
+              to="/"
+              className="text-2xl font-black text-white italic uppercase tracking-tighter"
+            >
+              READY TO <span className="text-[#FF5C00]">COOK</span>
+            </Link>{" "}
           </div>
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden lg:flex items-center space-x-10 text-white font-bold uppercase text-[10px] tracking-[0.3em]">
-          <button
-            onClick={() => handleNav("home")}
-            className={`${currentView === "home" ? "text-[#FF5C00]" : "hover:text-[#FF5C00]"} transition-all relative group`}
+        <div className="hidden md:flex space-x-10 text-[11px] font-black uppercase tracking-[0.3em]">
+          <Link
+            to="/"
+            className={`${isActive("/")} hover:text-[#FF5C00] transition-colors`}
           >
             Home
-            <span
-              className={`absolute -bottom-2 left-0 h-1 bg-[#FF5C00] transition-all duration-300 ${currentView === "home" ? "w-full" : "w-0 group-hover:w-full"}`}
-            ></span>
-          </button>
-          <button
-            onClick={() => handleNav("menu")}
-            className={`${currentView === "menu" ? "text-[#FF5C00]" : "hover:text-[#FF5C00]"} transition-all relative group`}
+          </Link>
+          <Link
+            to="/menu"
+            className={`${isActive("/menu")} hover:text-[#FF5C00] transition-colors`}
           >
             Pit Menu
-            <span
-              className={`absolute -bottom-2 left-0 h-1 bg-[#FF5C00] transition-all duration-300 ${currentView === "menu" ? "w-full" : "w-0 group-hover:w-full"}`}
-            ></span>
-          </button>
-          <button
-            onClick={() => handleNav("about")}
-            className={`${currentView === "about" ? "text-[#FF5C00]" : "hover:text-[#FF5C00]"} transition-all relative group`}
+          </Link>
+          <Link
+            to="/about"
+            className={`${isActive("/about")} hover:text-[#FF5C00] transition-colors`}
           >
             Our Story
-            <span
-              className={`absolute -bottom-2 left-0 h-1 bg-[#FF5C00] transition-all duration-300 ${currentView === "about" ? "w-full" : "w-0 group-hover:w-full"}`}
-            ></span>
-          </button>
-          <button
-            onClick={() => handleNav("gallery")}
-            className={`${currentView === "gallery" ? "text-[#FF5C00]" : "hover:text-[#FF5C00]"} transition-all relative group`}
+          </Link>
+          <Link
+            to="/gallery"
+            className={`${isActive("/gallery")} hover:text-[#FF5C00] transition-colors`}
           >
             Gallery
-            <span
-              className={`absolute -bottom-2 left-0 h-1 bg-[#FF5C00] transition-all duration-300 ${currentView === "gallery" ? "w-full" : "w-0 group-hover:w-full"}`}
-            ></span>
-          </button>
-          
-          <button
-            onClick={() => handleNav("contact")}
-            className={`${currentView === "contact" ? "text-[#FF5C00]" : "hover:text-[#FF5C00]"} transition-all relative group`}
+          </Link>
+          <Link
+            to="/contact"
+            className={`${isActive("/contact")} hover:text-[#FF5C00] transition-colors`}
           >
             Contact
-            <span
-              className={`absolute -bottom-2 left-0 h-1 bg-[#FF5C00] transition-all duration-300 ${currentView === "contact" ? "w-full" : "w-0 group-hover:w-full"}`}
-            ></span>
-          </button>
+          </Link>
         </div>
 
         {/* Auth & Cart */}
@@ -181,36 +172,36 @@ export const Navbar = ({
       <div
         className={`lg:hidden fixed inset-0 z-[-1] transition-all duration-700 glass-dark flex flex-col items-center justify-center space-y-6 ${isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"}`}
       >
-        <button
-          onClick={() => handleNav("home")}
-          className="text-white font-oswald text-3xl font-bold uppercase tracking-widest"
+        <Link
+          to="/"
+          className={`${isActive("/")} hover:text-[#FF5C00] transition-colors`}
         >
           Home
-        </button>
-        <button
-          onClick={() => handleNav("menu")}
-          className="text-white font-oswald text-3xl font-bold uppercase tracking-widest"
+        </Link>
+        <Link
+          to="/menu"
+          className={`${isActive("/menu")} hover:text-[#FF5C00] transition-colors`}
         >
           Pit Menu
-        </button>
-        <button
-          onClick={() => handleNav("gallery")}
-          className="text-white font-oswald text-3xl font-bold uppercase tracking-widest"
-        >
-          Gallery
-        </button>
-        <button
-          onClick={() => handleNav("about")}
-          className="text-white font-oswald text-3xl font-bold uppercase tracking-widest"
+        </Link>
+        <Link
+          to="/about"
+          className={`${isActive("/about")} hover:text-[#FF5C00] transition-colors`}
         >
           Our Story
-        </button>
-        <button
-          onClick={() => handleNav("contact")}
-          className="text-white font-oswald text-3xl font-bold uppercase tracking-widest"
+        </Link>
+        <Link
+          to="/gallery"
+          className={`${isActive("/gallery")} hover:text-[#FF5C00] transition-colors`}
+        >
+          Gallery
+        </Link>
+        <Link
+          to="/contact"
+          className={`${isActive("/contact")} hover:text-[#FF5C00] transition-colors`}
         >
           Contact
-        </button>
+        </Link>
       </div>
 
       <AuthModal

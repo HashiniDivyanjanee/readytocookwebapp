@@ -53,11 +53,11 @@ export const Chefs = () => {
               <div className="grid grid-cols-2 gap-8">
                 <div>
                    <h4 className="font-black text-[10px] uppercase tracking-widest text-[#FF5C00] mb-2">Expertise</h4>
-                   <p className="font-bold text-gray-900">10+</p>
+                   <p className="font-bold text-gray-900 text-7xl">10+</p>
                 </div>
                 <div>
                    <h4 className="font-black text-[10px] uppercase tracking-widest text-[#FF5C00] mb-2">Awards</h4>
-                   <p className="font-bold text-gray-900">3+</p>
+                   <p className="font-bold text-gray-900 text-7xl">3+</p>
                 </div>
               </div>
               {/* <div className="flex space-x-6 pt-6">

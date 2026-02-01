@@ -104,19 +104,19 @@ export const Footer = () => {
               </h4>
               <ul className="space-y-4 text-sm font-bold uppercase tracking-widest text-gray-400">
                 <li>
-                  <a href="#home" className="hover:text-white transition-colors">Home</a>
+                  <a href="/home" className="hover:text-white transition-colors">Home</a>
                 </li>
                 <li>
-                  <a href="#menu" className="hover:text-white transition-colors">Pit Menu</a>
+                  <a href="/menu" className="hover:text-white transition-colors">Pit Menu</a>
                 </li>
                 <li>
-                  <a href="#about" className="hover:text-white transition-colors">Our Story</a>
+                  <a href="/about" className="hover:text-white transition-colors">Our Story</a>
                 </li>
                 <li>
-                  <a href="#gallery" className="hover:text-white transition-colors">Gallery</a>
+                  <a href="/gallery" className="hover:text-white transition-colors">Gallery</a>
                 </li>
                 <li>
-                  <a href="#contact" className="hover:text-white transition-colors">Contact</a>
+                  <a href="/contact" className="hover:text-white transition-colors">Contact</a>
                 </li>
               </ul>
             </div>
