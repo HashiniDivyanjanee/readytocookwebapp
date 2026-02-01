@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db } from '../firebase'; // ඔබේ firebase path එක නිවැරදිදැයි බලන්න
+import { useNavigate } from 'react-router-dom';
+import { db } from '../firebase';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 export const SpecialOffer = () => {
@@ -9,7 +10,14 @@ export const SpecialOffer = () => {
   const [loading, setLoading] = useState(true);
   const timerRef = useRef(null);
 
-  // 1. Firestore එකෙන් Offers ලබා ගැනීම
+const navigate = useNavigate();
+
+const handleClaimNow = (offerId) => {
+    navigate(`/offers/${offerId}`);
+  };
+
+  if (loading || offers.length === 0) return null;
+
   useEffect(() => {
     const q = query(collection(db, "offers"), orderBy("createdAt", "desc"));
     
@@ -25,7 +33,6 @@ export const SpecialOffer = () => {
     return () => unsubscribe();
   }, []);
 
-  // 2. Slider Timer එක පාලනය කිරීම
   const startTimer = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     if (offers.length > 0) {
@@ -59,8 +66,8 @@ export const SpecialOffer = () => {
     setCurrent((prev) => (prev - 1 + offers.length) % offers.length);
   };
 
-  if (loading) return null; // හෝ ලස්සන skeleton loader එකක්
-  if (offers.length === 0) return null; // Offers නැත්නම් section එකම පෙන්වන්න එපා
+  if (loading) return null; 
+  if (offers.length === 0) return null; 
 
   return (
     <section className="bg-white py-24 overflow-hidden">
@@ -116,7 +123,10 @@ export const SpecialOffer = () => {
                       </p>
                       
                       <div className="flex items-center space-x-6 pt-4">
-                        <button className="bg-gray-900 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] hover:bg-[#FF5C00] transition-all shadow-xl">
+                       <button 
+                          onClick={() => handleClaimNow(slide.id)}
+                          className="bg-gray-900 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] hover:bg-[#FF5C00] transition-all shadow-xl"
+                        >
                           Claim Now
                         </button>
                       </div>

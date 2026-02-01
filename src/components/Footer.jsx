@@ -26,18 +26,73 @@ export const Footer = () => {
 
             {/* Social Links */}
             <div className="flex items-center space-x-8 pt-4">
-              {["Facebook", "Instagram", "X-Twitter"].map((social) => (
-                <a
-                  key={social}
-                  href="#"
-                  className="group relative overflow-hidden"
+              {/* Facebook Icon */}
+              <a
+                href="https://www.facebook.com/readytocookeasymarinatedfoods/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:bg-[#1877F2] hover:text-white transition-all duration-500 group shadow-lg"
+                aria-label="Facebook"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 group-hover:text-[#FF5C00] transition-colors duration-500">
-                    {social}
-                  </span>
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#FF5C00] group-hover:w-full transition-all duration-500"></span>
-                </a>
-              ))}
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+              </a>
+
+              {/* WhatsApp Icon */}
+              <a
+                href="https://wa.me/94775407767"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:bg-[#25D366] hover:text-white transition-all duration-500 group shadow-lg"
+                aria-label="WhatsApp"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7 8.38 8.38 0 0 1 3.8.9L21 3z"></path>
+                </svg>
+              </a>
+
+              {/* Email Icon */}
+              <a
+                href="mailto:readytocooksl@gmail.com"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:bg-[#FF5C00] hover:text-white transition-all duration-500 group shadow-lg"
+                aria-label="Email"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </a>
             </div>
           </div>
 
@@ -49,46 +104,32 @@ export const Footer = () => {
               </h4>
               <ul className="space-y-4 text-sm font-bold uppercase tracking-widest text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    The Menu
-                  </a>
+                  <a href="#home" className="hover:text-white transition-colors">Home</a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Pit Menu
-                  </a>
+                  <a href="#menu" className="hover:text-white transition-colors">Pit Menu</a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Our Story
-                  </a>
+                  <a href="#about" className="hover:text-white transition-colors">Our Story</a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Gallery
-                  </a>
+                  <a href="#gallery" className="hover:text-white transition-colors">Gallery</a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contact
-                  </a>
+                  <a href="#contact" className="hover:text-white transition-colors">Contact</a>
                 </li>
               </ul>
             </div>
 
             <div className="space-y-8">
               <h4 className="font-oswald text-[#FF5C00] font-black uppercase tracking-widest text-xs">
-                Operating
+                Operating Hours
               </h4>
               <ul className="space-y-4 text-sm font-bold uppercase tracking-widest text-gray-400">
                 <li className="flex flex-col">
-                  <span className="text-[9px] text-gray-600">Mon-Sun</span>{" "}
+                  <span className="text-[9px] text-gray-600">Mon-Sun</span>
                   08:00 - 22:00
                 </li>
-                {/* <li className="flex flex-col">
-                  <span className="text-[9px] text-gray-600">Sat-Sun</span>{" "}
-                  08:00 - 22:00
-                </li> */}
               </ul>
             </div>
 
@@ -96,26 +137,42 @@ export const Footer = () => {
               <h4 className="font-oswald text-[#FF5C00] font-black uppercase tracking-widest text-xs">
                 Reach Us
               </h4>
-              <ul className="space-y-4 text-sm font-bold  tracking-widest text-gray-400">
-                <li className="uppercase">No.615 C/1/1, Kottawa Rd, Thalawathugoda</li>
-                <li>+94 77 54 077 67</li>
-                <li>+94 70 540 73 17</li>
-                <li>readytocooksl@gmail.com</li>
+              <ul className="space-y-4 text-sm font-bold tracking-widest text-gray-400">
+                <li className="uppercase leading-relaxed">
+                   <a 
+                    href="https://maps.google.com/?q=No.615+C/1/1,+Kottawa+Rd,+Thalawathugoda" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    No.615 C/1/1, Kottawa Rd, Thalawathugoda
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+94775407767" className="hover:text-white transition-colors">+94 77 54 077 67</a>
+                </li>
+                <li>
+                  <a href="tel:+94705407317" className="hover:text-white transition-colors">+94 70 540 73 17</a>
+                </li>
+                <li>
+                  <a href="mailto:readytocooksl@gmail.com" className="hover:text-white transition-colors lowercase">
+                    readytocooksl@gmail.com
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-[9px] font-black uppercase tracking-[0.4em] text-gray-700">
+        <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center text-[9px] font-black uppercase tracking-[0.4em] text-gray-700">
           <p>
             © {new Date().getFullYear()} Ready to Cook. All rights reserved.
           </p>
           <div className="flex space-x-12 mt-4 md:mt-0">
-            <a href="#" className="hover:text-white transition-colors">
+            <a href="https://wa.me/94772109312" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
               Developed by CodeCraft Innovations
             </a>
-          
           </div>
         </div>
       </div>

@@ -37,7 +37,7 @@ const ManageOffers = ({ offers, onEdit }) => {
               Edit
             </button>
             <button 
-            onClick={() => onDelete(item.id)}
+            onClick={() => handleDelete(offer.id)}
               className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-xl font-bold text-sm hover:bg-red-100 hover:text-red-600 transition-colors"
             >
               Delete

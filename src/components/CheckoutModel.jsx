@@ -30,20 +30,21 @@ export const CheckoutModal = ({ isOpen, onClose, cart, total, clearCart }) => {
     const googleMapsUrl = `https://www.google.com/maps?q=${position.lat},${position.lng}`;
 
     const itemDetails = cart
-      .map(
-        (item) =>
-          `${item.name} x ${item.quantity} = Rs. ${(item.priceValue * item.quantity).toFixed(2)}`,
-      )
-      .join("\n");
+    .map((item) => {
+      const price = Number(item.priceValue) || 0;
+      const qty = Number(item.quantity) || 0;
+      return `• ${item.name} (x${qty}) - Rs. ${(price * qty).toFixed(2)}`;
+    })
+    .join("%0A");
 
-    const message =
-      `*New Order Received!*%0A%0A` +
-      `*Customer:* ${customerInfo.name}%0A` +
-      `*Phone:* ${customerInfo.phone}%0A` +
-      `*Address:* ${customerInfo.address}%0A` +
-      `*Map Location:* ${googleMapsUrl}%0A%0A` +
-      `*Items:*%0A${itemDetails}%0A%0A` + 
-      `*Total Amount: Rs. ${total.toFixed(2)}*`;
+    const message = 
+    `*NEW ORDER RECEIVED!*%0A%0A` +
+    `*Customer:* ${customerInfo.name}%0A` +
+    `*Phone:* ${customerInfo.phone}%0A` +
+    `*Address:* ${customerInfo.address}%0A%0A` +
+    `*--- ORDER ITEMS ---*%0A${itemDetails} %0A%0A` +
+    `*Total Amount: Rs. ${total.toFixed(2)}*%0A%0A` +
+    `*Delivery Location:*%0A${googleMapsUrl}`;
 
     const whatsappNumber = "94769070920";
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
@@ -108,7 +109,6 @@ export const CheckoutModal = ({ isOpen, onClose, cart, total, clearCart }) => {
                 setCustomerInfo({ ...customerInfo, address: e.target.value })
               }
             />
-       
 
             <div className="space-y-4">
               <div className="flex justify-between items-center">

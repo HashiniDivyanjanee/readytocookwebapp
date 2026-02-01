@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase'; // ඔබේ firebase.js පවතින නිවැරදි Path එක මෙතනට ලබා දෙන්න
+import { db } from '../firebase'; 
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
-const CATEGORIES = ['Chicken', 'Beef', 'Pork', 'Sea Food'];
+// 'All' යන්න මුලට එක් කරන ලදී
+const CATEGORIES = ['All', 'Chicken', 'Beef', 'Pork', 'Sea Food'];
 
+// MenuItemCard කොම්පෝනන්ට් එක වෙනස් නොවේ...
 const MenuItemCard = ({ item, index, addToCart, onViewDetails }) => {
   const [soldLevel, setSoldLevel] = useState('Low');
   const [spicyLevel, setSpicyLevel] = useState('Low');
@@ -98,15 +100,14 @@ const MenuItemCard = ({ item, index, addToCart, onViewDetails }) => {
 };
 
 export const Menu = ({ addToCart, onViewDetails, fullPage, limit, onExploreFullMenu }) => {
-  const [activeCategory, setActiveCategory] = useState('Chicken');
+  const [activeCategory, setActiveCategory] = useState('All'); // Default 'All'
+  const [searchTerm, setSearchTerm] = useState(''); // Search state
   const [animate, setAnimate] = useState(true);
   const [menuData, setMenuData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Firestore Data Fetching
   useEffect(() => {
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-    
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const items = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -115,7 +116,6 @@ export const Menu = ({ addToCart, onViewDetails, fullPage, limit, onExploreFullM
       setMenuData(items);
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
@@ -123,10 +123,16 @@ export const Menu = ({ addToCart, onViewDetails, fullPage, limit, onExploreFullM
     setAnimate(false);
     const timer = setTimeout(() => setAnimate(true), 50);
     return () => clearTimeout(timer);
-  }, [activeCategory]);
+  }, [activeCategory, searchTerm]);
 
+  // Filtering Logic (Category + Search)
   const filteredItems = menuData
-    .filter(item => item.category === activeCategory)
+    .filter(item => {
+      const matchesCategory = activeCategory === 'All' || item.category === activeCategory;
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            item.desc.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesCategory && matchesSearch;
+    })
     .slice(0, limit || menuData.length);
 
   if (loading) {
@@ -139,35 +145,51 @@ export const Menu = ({ addToCart, onViewDetails, fullPage, limit, onExploreFullM
 
   return (
     <section id="menu" className={`${fullPage ? 'bg-white' : 'bg-[#f8f8f8]'} overflow-hidden`}>
-      {/* --- PAGE BANNER (දැන් නැවත එක් කර ඇත) --- */}
       {fullPage && (
         <div className="relative h-[50vh] min-h-[400px] w-full flex items-center justify-center overflow-hidden bg-black mb-12">
           <div 
-            className="absolute inset-0 bg-cover bg-center opacity-60 scale-105 transition-transform duration-[10000ms] ease-linear hover:scale-100"
+            className="absolute inset-0 bg-cover bg-center opacity-60 scale-105"
             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=2000&auto=format&fit=crop')" }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-white"></div>
           </div>
-          <div className="relative z-10 text-center space-y-4">
+          <div className="relative z-10 text-center space-y-4 px-4">
             <span className="text-[#FF5C00] font-oswald text-xs tracking-[0.6em] uppercase font-black block">The Pit Menu</span>
             <h1 className="text-white font-oswald text-6xl md:text-9xl font-black uppercase tracking-tighter leading-none">
               SMOKY <span className="text-[#FF5C00]">FLAVORS</span>
             </h1>
-            <p className="text-white/80 italic text-lg md:text-2xl">Hand-crafted delights for the soul</p>
+            
+            {/* SEARCH BAR - Only shows on Full Page */}
+            <div className="mt-8 max-w-xl mx-auto relative group">
+              <input 
+                type="text"
+                placeholder="Search your favorite meal..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-4 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#FF5C00] transition-all"
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center space-x-2 bg-[#FF5C00]/10 px-4 py-1.5 rounded-full">
-            <span className="w-2 h-2 bg-[#FF5C00] rounded-full animate-pulse"></span>
-            <span className="text-[#FF5C00] font-oswald text-[10px] tracking-[0.3em] uppercase font-black">Our Specialties</span>
+        {!fullPage && (
+          <div className="text-center mb-16 space-y-4">
+            <div className="inline-flex items-center space-x-2 bg-[#FF5C00]/10 px-4 py-1.5 rounded-full">
+              <span className="w-2 h-2 bg-[#FF5C00] rounded-full animate-pulse"></span>
+              <span className="text-[#FF5C00] font-oswald text-[10px] tracking-[0.3em] uppercase font-black">Our Specialties</span>
+            </div>
+            <h2 className="font-oswald text-4xl md:text-6xl text-gray-900 font-black uppercase tracking-tighter">
+              The <span className="text-[#FF5C00]">Pitmaster's</span> Menu
+            </h2>
           </div>
-          <h2 className="font-oswald text-4xl md:text-6xl text-gray-900 font-black uppercase tracking-tighter">
-            The <span className="text-[#FF5C00]">Pitmaster's</span> Menu
-          </h2>
-        </div>
+        )}
 
         {/* Category Navigation */}
         <div className="flex flex-wrap justify-center gap-3 mb-16">
@@ -186,17 +208,23 @@ export const Menu = ({ addToCart, onViewDetails, fullPage, limit, onExploreFullM
         </div>
 
         {/* Menu Grid */}
-        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          {filteredItems.map((item, index) => (
-            <MenuItemCard 
-              key={item.id} 
-              item={item} 
-              index={index} 
-              addToCart={addToCart} 
-              onViewDetails={onViewDetails} 
-            />
-          ))}
-        </div>
+        {filteredItems.length > 0 ? (
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-700 ${animate ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            {filteredItems.map((item, index) => (
+              <MenuItemCard 
+                key={item.id} 
+                item={item} 
+                index={index} 
+                addToCart={addToCart} 
+                onViewDetails={onViewDetails} 
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20">
+            <h3 className="text-2xl font-bold text-gray-400 italic">No items found matching your search.</h3>
+          </div>
+        )}
 
         {!fullPage && (
           <div className="mt-20 text-center">

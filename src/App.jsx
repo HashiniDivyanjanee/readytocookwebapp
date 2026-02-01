@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Navbar } from "./components/Navbar";
+import { Navbar } from "./components/navbar";
 import { Hero } from "./components/Hero";
 import { About } from "./components/about";
 import { Menu } from "./components/menu";
@@ -15,6 +15,7 @@ import { ItemDetails } from "./components/ItemDetails";
 import AdminDashboard from "./components/AdminDashboard";
 import RiderDashboard from "./components/admin/RiderDashboard";
 import { auth, db } from "./firebase";
+import { Routes, Route, Navigate } from "react-router-dom";
 const App = () => {
   const [scrolled, setScrolled] = useState(false);
   const [cart, setCart] = useState([]);
@@ -70,12 +71,13 @@ const App = () => {
   const addToCart = (item, quantity = 1) => {
     setCart((prevCart) => {
       const existing = prevCart.find((i) => i.id === item.id);
+      const priceValue = parseFloat(item.price) || 0;
       if (existing) {
         return prevCart.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i,
         );
       }
-      return [...prevCart, { ...item, quantity }];
+      return [...prevCart, { ...item, quantity, priceValue }];
     });
     setIsCartOpen(true);
   };
@@ -166,7 +168,7 @@ const App = () => {
 
           {/* Menu Full Page */}
           {currentView === "menu" && (
-            <div className="pt-20">
+            <div >
               <Menu
                 addToCart={addToCart}
                 onViewDetails={viewItemDetails}
@@ -186,7 +188,7 @@ const App = () => {
 
           {/* About Page */}
           {currentView === "about" && (
-            <div className="pt-20">
+            <div >
               <About fullPage />
               <Chefs />
             </div>
@@ -194,7 +196,7 @@ const App = () => {
 
           {/* Gallery Page */}
           {currentView === "gallery" && (
-            <div className="pt-20">
+            <div>
               <Gallery fullPage />
             </div>
           )}

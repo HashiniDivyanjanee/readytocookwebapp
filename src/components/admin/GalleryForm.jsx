@@ -1,37 +1,57 @@
 import React, { useState } from "react";
 
 const GalleryForm = ({ loading, handleUpload }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const onFileChange = (e) => {
+    if (e.target.files) {
+      setSelectedFiles(Array.from(e.target.files));
+    }
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (selectedFile) {
-      handleUpload(selectedFile);
-      setSelectedFile(null); 
+    if (selectedFiles.length > 0) {
+      handleUpload(selectedFiles);
+      setSelectedFiles([]); 
     } else {
-      alert("Please select an image first!");
+      alert("Please select at least one image!");
     }
   };
 
   return (
     <div className="bg-white p-8 rounded-3xl shadow-lg max-w-md mx-auto border border-blue-50">
-      <h2 className="text-2xl font-bold mb-6 text-blue-600">Add Gallery Image</h2>
+      <h2 className="text-2xl font-bold mb-6 text-blue-600">Add Gallery Images</h2>
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="p-8 border-2 border-dashed border-blue-200 rounded-2xl text-center bg-blue-50/30">
           <input 
             type="file" 
             accept="image/*"
-            onChange={(e) => setSelectedFile(e.target.files[0])} 
-            className="text-sm block w-full text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            multiple
+            onChange={onFileChange} 
+            className="text-sm block w-full text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
           />
-          {selectedFile && <p className="mt-2 text-xs text-blue-600 font-medium">{selectedFile.name}</p>}
+          
+          {selectedFiles.length > 0 && (
+            <div className="mt-4 text-left">
+              <p className="text-xs text-blue-600 font-bold mb-2">Selected ({selectedFiles.length}):</p>
+              <ul className="max-h-32 overflow-y-auto space-y-1">
+                {selectedFiles.map((file, index) => (
+                  <li key={index} className="text-[10px] text-gray-500 truncate bg-white p-1 rounded border">
+                    {file.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
+
         <button 
           type="submit" 
-          disabled={loading} 
-          className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold uppercase tracking-wider disabled:bg-gray-400"
+          disabled={loading || selectedFiles.length === 0} 
+          className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold uppercase tracking-wider disabled:bg-gray-400 transition-colors"
         >
-          {loading ? "Uploading..." : "Upload to Gallery"}
+          {loading ? "Uploading..." : `Upload ${selectedFiles.length} Images`}
         </button>
       </form>
     </div>

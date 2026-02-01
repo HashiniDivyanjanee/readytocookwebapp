@@ -93,25 +93,30 @@ const AdminDashboard = () => {
   }, []);
 
   // --- Gallery Upload Logic ---
-  const handleGalleryUpload = async (file) => {
-    setLoading(true);
-    try {
+ const handleGalleryUpload = async (files) => {
+  setLoading(true);
+  try {
+    const uploadPromises = files.map(async (file) => {
       const imgRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
       await uploadBytes(imgRef, file);
       const url = await getDownloadURL(imgRef);
 
-      await addDoc(collection(db, "gallery"), {
+      return addDoc(collection(db, "gallery"), {
         imageUrl: url,
         uploadedAt: serverTimestamp(),
       });
+    });
 
-      alert("Image added to gallery!");
-      setAdminView("manage-gallery");
-    } catch (err) {
-      alert("Gallery Error: " + err.message);
-    }
-    setLoading(false);
-  };
+    await Promise.all(uploadPromises);
+
+    alert(`Successfully uploaded ${files.length} images!`);
+    setAdminView("manage-gallery");
+  } catch (err) {
+    alert("Gallery Error: " + err.message);
+  }
+  setLoading(false);
+};
+
 
   const handleProductUpload = async (e) => {
     e.preventDefault();

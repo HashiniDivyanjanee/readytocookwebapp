@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {CheckoutModal} from './CheckoutModel';
+import { CheckoutModal } from "./CheckoutModel";
 
 export const CartSidebar = ({
   isOpen,
@@ -9,7 +9,7 @@ export const CartSidebar = ({
   removeItem,
 }) => {
   const total = cart.reduce(
-    (sum, item) => sum + item.priceValue * item.quantity,
+    (sum, item) => sum + (Number(item.priceValue) || 0) * (item.quantity || 0),
     0,
   );
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -110,8 +110,11 @@ export const CartSidebar = ({
                         </div>
                       )}
 
-                      <p className="text-[#FF5C00] font-oswald font-bold text-lg mt-1">
-                        Rs. {item.priceValue.toFixed(2)}
+                      <p className="font-oswald font-bold text-lg text-gray-900">
+                        Rs.{" "}
+                        {(
+                          (Number(item.priceValue) || 0) * (item.quantity || 0)
+                        ).toFixed(2)}
                       </p>
                     </div>
                     <div className="flex items-center justify-between mt-4">
@@ -166,8 +169,7 @@ export const CartSidebar = ({
         onClose={() => setIsCheckoutOpen(false)}
         cart={cart}
         total={total}
-        clearCart={() => {
-        }}
+        clearCart={() => {}}
       />
     </>
   );
