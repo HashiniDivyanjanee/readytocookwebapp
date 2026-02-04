@@ -127,7 +127,7 @@ const OrderDetailsModal = ({ order, onClose }) => {
              
               className="w-full md:px-8 border-2 border-gray-200 py-4 rounded-2xl font-bold uppercase text-gray-400 hover:bg-gray-50 transition-all active:scale-95"
             >
-               Print Invoice
+               Print Invoice  
             </button>
           </div>
         </div>

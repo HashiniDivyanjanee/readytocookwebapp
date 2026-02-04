@@ -97,6 +97,11 @@ export const CartSidebar = ({
                       {/* Meta info */}
                       {(item.selectedSold || item.selectedSpicy) && (
                         <div className="flex gap-2 mt-1">
+                          {item.selectedWeight && (
+                            <span className="text-[8px] font-black uppercase tracking-widest bg-gray-900 text-white px-2 py-0.5 rounded">
+                              Weight: {item.selectedWeight}
+                            </span>
+                          )}
                           {item.selectedSold && (
                             <span className="text-[8px] font-black uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded text-gray-500">
                               Sold: {item.selectedSold}

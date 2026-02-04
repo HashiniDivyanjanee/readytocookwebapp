@@ -25,51 +25,58 @@ export const CheckoutModal = ({ isOpen, onClose, cart, total, clearCart }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const googleMapsUrl = `https://www.google.com/maps?q=${position.lat},${position.lng}`;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  const googleMapsUrl = `https://www.google.com/maps?q=${position.lat},${position.lng}`;
 
-    const itemDetails = cart
+  const itemDetails = cart
     .map((item) => {
-      const price = Number(item.priceValue) || 0;
+      const price = Number(item.price) || 0; 
       const qty = Number(item.quantity) || 0;
-      return `• ${item.name} (x${qty}) - Rs. ${(price * qty).toFixed(2)}`;
-    })
-    .join("%0A");
+      
+      const weight = item.selectedWeight ? `%0A   - Weight: ${item.selectedWeight}` : "";
+      const salt = item.selectedSold ? `%0A   - Salt: ${item.selectedSold}` : "";
+      const spicy = item.selectedSpicy ? `%0A   - Spicy: ${item.selectedSpicy}` : "";
 
-    const message = 
+      return `• *${item.name}* (x${qty})${weight}${salt}${spicy}%0A   - Subtotal: Rs. ${(price * qty).toFixed(2)}`;
+    })
+    .join("%0A%0A");
+
+  const message = 
     `*NEW ORDER RECEIVED!*%0A%0A` +
     `*Customer:* ${customerInfo.name}%0A` +
     `*Phone:* ${customerInfo.phone}%0A` +
     `*Address:* ${customerInfo.address}%0A%0A` +
-    `*--- ORDER ITEMS ---*%0A${itemDetails} %0A%0A` +
+    `*--- ORDER ITEMS ---*%0A${itemDetails}%0A%0A` +
     `*Total Amount: Rs. ${total.toFixed(2)}*%0A%0A` +
     `*Delivery Location:*%0A${googleMapsUrl}`;
 
-    const whatsappNumber = "94769070920";
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+  const whatsappNumber = "94769070920";
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
 
-    try {
-      await addDoc(collection(db, "orders"), {
-        customerName: customerInfo.name,
-        phone: customerInfo.phone,
-        address: customerInfo.address,
-        mapLocation: googleMapsUrl,
-        items: cart,
-        totalAmount: total,
-        status: "pending",
-        createdAt: serverTimestamp(),
-      });
+  try {
+    await addDoc(collection(db, "orders"), {
+      customerName: customerInfo.name,
+      phone: customerInfo.phone,
+      address: customerInfo.address,
+      mapLocation: googleMapsUrl,
+      items: cart,
+      totalAmount: total,
+      status: "pending",
+      createdAt: serverTimestamp(),
+    });
 
-      window.open(whatsappUrl, "_blank");
-      alert("Order Placed Successfully!");
-      if (clearCart) clearCart();
-      onClose();
-    } catch (error) {
-      console.error("Firebase Error: ", error);
-      alert("Something went wrong with Firebase. Please try again.");
-    }
-  };
+    window.open(whatsappUrl, "_blank");
+    alert("Order Placed Successfully!");
+    if (clearCart) clearCart();
+    onClose();
+  } catch (error) {
+    console.error("Firebase Error: ", error);
+    alert("Something went wrong. Please try again.");
+  }
+};
+
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
       <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl animate-[slideUp_0.4s_ease-out] flex flex-col max-h-[90vh]">

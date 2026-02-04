@@ -196,40 +196,40 @@ const AdminDashboard = () => {
   };
 
 
-  const handleRiderUpload = async (riderData) => {
-    setLoading(true);
-    try {
-      const tempPassword = riderData.phone || "rider123";
+ const handleRiderUpload = async (riderData) => {
+  setLoading(true);
+  try {
+    const tempPassword = riderData.phone || "rider123";
 
-      const res = await createUserWithEmailAndPassword(
-        auth,
-        riderData.email,
-        tempPassword,
-      );
-      const uid = res.user.uid;
+    const res = await createUserWithEmailAndPassword(
+      auth,
+      riderData.email,
+      tempPassword,
+    );
+    const uid = res.user.uid;
 
-      await setDoc(doc(db, "data", "users", "users", uid), {
-        uid: uid,
-        name: riderData.name,
-        email: riderData.email,
-        phone: riderData.phone,
-        vehicleNo: riderData.vehicleNo,
-        role: "rider",
-        status: "active",
-        createdAt: serverTimestamp(),
-      });
+    await setDoc(doc(db, "data", "users", "users", uid), {
+      uid: uid,
+      name: riderData.name,
+      email: riderData.email,
+      phone: riderData.phone,
+      vehicleNo: riderData.vehicleNo,
+      role: riderData.role,
+      status: "active",
+      createdAt: serverTimestamp(),
+    });
 
-      alert(
-        "Rider created! Note: You have been logged out for security. Please log in again as Admin.",
-      );
-      window.location.reload();
-    } catch (err) {
-      console.error("Auth & Firestore Error: ", err);
-      alert("Error: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    alert(
+      `${riderData.role.toUpperCase()} created successfully! Note: You have been logged out for security.`
+    );
+    window.location.reload();
+  } catch (err) {
+    console.error("Auth & Firestore Error: ", err);
+    alert("Error: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-10 px-6 font-sans">
@@ -286,8 +286,8 @@ const AdminDashboard = () => {
               onClick={() => setAdminView("manage-gallery")}
             />
             <DashboardCard
-              icon="🛵"
-              title="Add Rider"
+              icon="👤"
+              title="Add User"
               onClick={() => setAdminView("add-rider")}
             />
           </div>

@@ -1,9 +1,9 @@
-import React, { useState } from "react"; // useState එක් කළා
+import React, { useState } from "react";
 import { db } from "../../firebase";
 import { doc, deleteDoc } from "firebase/firestore";
 
 const ManageProducts = ({ products, onEdit }) => {
-  const [searchTerm, setSearchTerm] = useState(""); // සර්ච් ස්ටේට් එක
+  const [searchTerm, setSearchTerm] = useState(""); 
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
@@ -16,19 +16,19 @@ const ManageProducts = ({ products, onEdit }) => {
     }
   };
 
-  // සර්ච් එකට අනුව ෆිල්ටර් කිරීමේ ලොජික් එක
+  // Filter එකට mainCategory සහ category දෙකම එක් කිරීම
   const filteredProducts = products.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchTerm.toLowerCase())
+    (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (item.mainCategory && item.mainCategory.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
     <div className="space-y-6">
-      {/* --- Search Bar Section --- */}
       <div className="relative max-w-md mx-auto md:mx-0">
         <input
           type="text"
-          placeholder="Search products by name or category..."
+          placeholder="Search by name, main category or sub..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full bg-white border border-gray-200 rounded-2xl px-5 py-3 pl-12 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5C00]/50 transition-all shadow-sm"
@@ -40,7 +40,6 @@ const ManageProducts = ({ products, onEdit }) => {
         </div>
       </div>
 
-      {/* --- Products Grid --- */}
       {filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((item) => (
@@ -48,8 +47,20 @@ const ManageProducts = ({ products, onEdit }) => {
               <img src={item.image} alt={item.name} className="w-20 h-20 rounded-xl object-cover" />
               <div className="flex-1">
                 <h3 className="font-bold text-gray-800 leading-tight">{item.name}</h3>
-                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">{item.category}</span>
+                
+                {/* --- පවතින Main Category සහ Sub Category පෙන්වීම --- */}
+                <div className="flex gap-1 items-center mt-1">
+                  <span className="text-[9px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded uppercase font-bold tracking-wider">
+                    {item.mainCategory || 'N/A'}
+                  </span>
+                  <span className="text-gray-300">|</span>
+                  <span className="text-[9px] text-gray-400 uppercase font-bold tracking-widest">
+                    {item.category}
+                  </span>
+                </div>
+
                 <p className="text-[#FF5C00] font-bold text-sm mt-1">Rs. {item.price}</p>
+                
                 <div className="flex gap-2 mt-3">
                   <button 
                     onClick={() => onEdit(item)}

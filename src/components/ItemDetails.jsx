@@ -12,9 +12,10 @@ export const ItemDetails = ({ addToCart }) => {
   const [quantity, setQuantity] = useState(1);
   const [isVisible, setIsVisible] = useState(false);
   
-  // මුලින් default අගයන් ලබා දෙන්න
+  // States for Customization
   const [soldLevel, setSoldLevel] = useState("Low");
   const [spicyLevel, setSpicyLevel] = useState("Low");
+  const [weight, setWeight] = useState("500g"); // අලුතින් එක් කළ Weight state එක
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -26,14 +27,13 @@ export const ItemDetails = ({ addToCart }) => {
           const data = { id: docSnap.id, ...docSnap.data() };
           setItem(data);
           
-          // දත්ත ලැබුණු පසු level සකස් කරන්න
+          // පවතින දත්ත තිබේ නම් ඒවා ලබා ගැනීම
           if (data.selectedSold) setSoldLevel(data.selectedSold);
           if (data.selectedSpicy) setSpicyLevel(data.selectedSpicy);
+          if (data.selectedWeight) setWeight(data.selectedWeight);
           
-          // Animation එක සඳහා
           setTimeout(() => setIsVisible(true), 100);
         } else {
-          console.log("No such item!");
           navigate("/menu");
         }
       } catch (error) {
@@ -46,7 +46,6 @@ export const ItemDetails = ({ addToCart }) => {
     fetchItem();
   }, [id, navigate]);
 
-  // Loading Screen
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -58,12 +57,16 @@ export const ItemDetails = ({ addToCart }) => {
     );
   }
 
-  // දත්ත නොමැති නම් error වීම වැළැක්වීමට
   if (!item) return null;
 
   const handleAddToCart = () => {
     addToCart(
-      { ...item, selectedSold: soldLevel, selectedSpicy: spicyLevel },
+      { 
+        ...item, 
+        selectedSold: soldLevel, 
+        selectedSpicy: spicyLevel, 
+        selectedWeight: weight // Weight එක cart එකට එක් කිරීම
+      },
       quantity
     );
   };
@@ -76,35 +79,18 @@ export const ItemDetails = ({ addToCart }) => {
           onClick={() => navigate(-1)}
           className="pointer-events-auto group flex items-center space-x-3 bg-white/90 backdrop-blur-md px-5 py-3 rounded-2xl shadow-xl border border-gray-100 transition-all hover:bg-black hover:text-white"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          <span className="font-oswald text-[10px] font-black uppercase tracking-[0.3em]">
-            Back to Menu
-          </span>
+          <span className="font-oswald text-[10px] font-black uppercase tracking-[0.3em]">Back to Menu</span>
         </button>
       </div>
 
       <div className="flex flex-col lg:flex-row min-h-screen">
-        {/* Left Side: Fixed Visual */}
-        <div className="lg:w-[55%] relative h-[50vh] lg:h-screen lg:sticky lg:top-0 overflow-hidden bg-gray-100">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="w-full h-full object-cover animate-[kenBurnsDetail_30s_linear_infinite_alternate]"
-          />
+        {/* Left Side: Image */}
+        <div className="lg:w-[50%] relative h-[50vh] lg:h-screen lg:sticky lg:top-0 overflow-hidden bg-gray-100">
+          <img src={item.image} alt={item.name} className="w-full h-full object-cover animate-[kenBurnsDetail_30s_linear_infinite_alternate]" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent"></div>
-          <div className="absolute bottom-12 left-12 hidden lg:block">
-            <div className="text-white/40 font-oswald text-[10vw] font-black leading-none select-none">
-              #GRILL
-            </div>
-          </div>
         </div>
 
         {/* Right Side: Details */}
@@ -121,59 +107,71 @@ export const ItemDetails = ({ addToCart }) => {
                 {item.name}
               </h1>
               <div className="h-1.5 w-24 bg-[#FF5C00]"></div>
-              <p className="font-playfair italic text-2xl text-gray-400 leading-relaxed">
-                "{item.desc}"
-              </p>
+              <p className="font-playfair italic text-2xl text-gray-400 leading-relaxed">"{item.desc}"</p>
             </div>
 
-            {/* Customization Grid */}
-            <div className="grid grid-cols-2 gap-8 mb-12 border-t border-gray-100 pt-12">
+            {/* --- Customization Grid (Weight, Salt, Spicy) --- */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 border-t border-gray-100 pt-12">
+              
+              {/* Weight Selector */}
               <div className="space-y-2">
-                <h4 className="text-[10px] font-black uppercase tracking-widest text-[#FF5C00]">Select Sold Level</h4>
-                <div className="relative">
-                  <select
-                    value={soldLevel}
-                    onChange={(e) => setSoldLevel(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-black uppercase tracking-widest text-gray-900 focus:outline-none focus:border-[#FF5C00] appearance-none cursor-pointer"
-                  >
-                    <option value="Low">Low</option>
-                    <option value="High">High</option>
-                  </select>
-                </div>
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-[#FF5C00]">Weight</h4>
+                <select
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 text-sm font-black uppercase text-gray-900 focus:outline-none focus:border-[#FF5C00] cursor-pointer"
+                >
+                  <option value="500g">500g</option>
+                  <option value="1kg">1kg</option>
+                </select>
               </div>
 
+              {/* Salt Level */}
               <div className="space-y-2">
-                <h4 className="text-[10px] font-black uppercase tracking-widest text-[#FF5C00]">Select Spicy Level</h4>
-                <div className="relative">
-                  <select
-                    value={spicyLevel}
-                    onChange={(e) => setSpicyLevel(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-black uppercase tracking-widest text-gray-900 focus:outline-none focus:border-[#FF5C00] appearance-none cursor-pointer"
-                  >
-                    <option value="Low">Low</option>
-                    <option value="High">High</option>
-                  </select>
-                </div>
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-[#FF5C00]">Salt</h4>
+                <select
+                  value={soldLevel}
+                  onChange={(e) => setSoldLevel(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 text-sm font-black uppercase text-gray-900 focus:outline-none focus:border-[#FF5C00] cursor-pointer"
+                >
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                </select>
               </div>
+
+              {/* Spicy Level */}
+              <div className="space-y-2">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-[#FF5C00]">Spicy</h4>
+                <select
+                  value={spicyLevel}
+                  onChange={(e) => setSpicyLevel(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-4 py-4 text-sm font-black uppercase text-gray-900 focus:outline-none focus:border-[#FF5C00] cursor-pointer"
+                >
+                  <option value="Low">Low</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+
             </div>
 
             {/* Price & Quantity */}
-            <div className="bg-gray-50 rounded-[2.5rem] p-8 md:p-10 mb-8 border border-gray-100">
+            <div className="bg-gray-50 rounded-[2.5rem] p-8 mb-8 border border-gray-100">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                 <div className="space-y-1">
-                  <span className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Unit Price</span>
-                  <p className="font-oswald text-4xl text-gray-900 font-black">Rs. {item.price}</p>
+                  <span className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">Total Price</span>
+                  <p className="font-oswald text-4xl text-gray-900 font-black">Rs. {item.price * quantity}</p>
                 </div>
 
                 <div className="flex items-center bg-white rounded-2xl p-2 shadow-sm border border-gray-100">
-                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-12 h-12 font-bold text-2xl text-gray-400 hover:text-black transition-colors">−</button>
+                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-12 h-12 font-bold text-2xl text-gray-400 hover:text-black">−</button>
                   <span className="w-10 text-center font-oswald text-2xl font-black">{quantity}</span>
-                  <button onClick={() => setQuantity(q => q + 1)} className="w-12 h-12 font-bold text-2xl text-gray-400 hover:text-black transition-colors">+</button>
+                  <button onClick={() => setQuantity(q => q + 1)} className="w-12 h-12 font-bold text-2xl text-gray-400 hover:text-black">+</button>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Buttons */}
             <div className="flex flex-col md:flex-row gap-4">
               <button
                 onClick={handleAddToCart}
@@ -183,9 +181,6 @@ export const ItemDetails = ({ addToCart }) => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-              </button>
-              <button className="flex-1 border-2 border-black py-6 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-black hover:text-white transition-all">
-                Order Now
               </button>
             </div>
           </div>
