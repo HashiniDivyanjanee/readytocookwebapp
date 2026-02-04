@@ -24,6 +24,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import RiderDashboard from "./components/admin/RiderDashboard";
 import { auth } from "./firebase";
 import ScrollToTop from "./components/ScrollToTop";
+import ChefDashboard from "./components/admin/ChefDashboard";
 
 const App = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -57,6 +58,7 @@ const App = () => {
     setUserRole(role);
     setCurrentUser(user);
     if (role === "rider") navigate("/rider-dashboard");
+    else if (role.includes("chef")) navigate("/chef-dashboard");
     else if (role === "admin") navigate("/admin-dashboard");
     else navigate("/");
   };
@@ -152,7 +154,6 @@ const App = () => {
               </>
             }
           />
-
           {/* Individual Pages */}
           <Route
             path="/menu"
@@ -169,7 +170,6 @@ const App = () => {
           />
           <Route path="/gallery" element={<Gallery fullPage />} />
           <Route path="/contact" element={<Contact />} />
-
           {/* Dynamic Item Details Page */}
           <Route
             path="/item/:id"
@@ -198,7 +198,10 @@ const App = () => {
               )
             }
           />
-
+<Route
+  path="/chef-dashboard"
+  element={<ChefDashboard userRole={userRole} />} 
+/>
           {/* 404 Redirect */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

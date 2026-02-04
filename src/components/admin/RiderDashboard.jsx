@@ -10,6 +10,9 @@ import {
 } from "firebase/firestore";
 import OrderDetailsModal from "../../components/admin/OrderDetailsModal";
 
+
+
+
 const RiderDashboard = ({ userUid }) => {
   const [myOrders, setMyOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -23,6 +26,29 @@ const RiderDashboard = ({ userUid }) => {
       alert("Status update failed!");
     }
   };
+
+
+const handleGetOrder = async (order, isCancelling = false) => {
+  const orderRef = doc(db, "orders", order.id);
+  const updateData = isCancelling 
+    ? { riderId: null, status: "Ready" } 
+    : { riderId: userUid, status: "Picked Up" };
+
+  await updateDoc(orderRef, updateData);
+  
+  const msg = isCancelling 
+    ? `Rider change for your order #${order.id.slice(-5)}. Please wait.`
+    : `Rider is on the way with your order #${order.id.slice(-5)}! 🛵`;
+    
+  sendWhatsApp(order.phone, msg);
+};
+
+const q = query(
+  collection(db, "orders"), 
+  where("status", "in", ["Ready", "Picked Up", "Delivered"])
+);
+
+
 
   useEffect(() => {
     if (!userUid) return;

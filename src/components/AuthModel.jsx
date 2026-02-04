@@ -21,37 +21,28 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
     try {
       if (isSignUp) {
         const res = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, "data", "users", "users", res.user.uid), {
+
+        const userData = {
           uid: res.user.uid,
           name: name,
           email: email,
-          role: "customer",
-        });
-       await setDoc(doc(db, "users", res.user.uid), userData);
-        
-        setSuccessMsg("Account Created Successfully! Redirecting...");
-        
-        setTimeout(() => {
-          onClose();
-          onLoginSuccess("customer", res.user);
-          setSuccessMsg("");
-        }, 2000);
+          role: "customer", 
+        };
+
+        await setDoc(doc(db, "data", "users", "users", res.user.uid), userData);
+
+        setSuccessMsg("Account Created Successfully!");
       } else {
         const res = await signInWithEmailAndPassword(auth, email, password);
         const userDocRef = doc(db, "data", "users", "users", res.user.uid);
         const userDoc = await getDoc(userDocRef);
 
-     let role = "customer";
+        let role = "customer";
         if (userDoc.exists()) {
           role = userDoc.data().role;
         }
 
-        setSuccessMsg(`Welcome Back! Redirecting to ${role} dashboard...`);
-        setTimeout(() => {
-          onClose();
-          onLoginSuccess(role, res.user);
-          setSuccessMsg("");
-        }, 2000);
+        onLoginSuccess(role, res.user);
       }
     } catch (err) {
       console.error("Auth Error: ", err);
