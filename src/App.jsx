@@ -54,9 +54,16 @@ const App = () => {
   }, []);
 
   // Login Success Handler
-  const handleLoginSuccess = (role, user) => {
+  const handleLoginSuccess = async (role, user) => {
     setUserRole(role);
-    setCurrentUser(user);
+
+    const userDoc = await getDoc(doc(db, "data", "users", "users", user.uid));
+    if (userDoc.exists()) {
+      setCurrentUser({ ...user, name: userDoc.data().name });
+    } else {
+      setCurrentUser(user);
+    }
+
     if (role === "rider") navigate("/rider-dashboard");
     else if (role.includes("chef")) navigate("/chef-dashboard");
     else if (role === "admin") navigate("/admin-dashboard");
@@ -198,10 +205,15 @@ const App = () => {
               )
             }
           />
-<Route
-  path="/chef-dashboard"
-  element={<ChefDashboard userRole={userRole} />} 
-/>
+          <Route
+            path="/chef-dashboard"
+            element={
+              <ChefDashboard
+                userRole={userRole}
+                userName={currentUser?.name || "Chef"}
+              />
+            }
+          />
           {/* 404 Redirect */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

@@ -31,7 +31,7 @@ const RiderDashboard = ({ userUid }) => {
 const handleGetOrder = async (order, isCancelling = false) => {
   const orderRef = doc(db, "orders", order.id);
   const updateData = isCancelling 
-    ? { riderId: null, status: "Ready" } 
+    ? { riderId: null, status: "Completed" } 
     : { riderId: userUid, status: "Picked Up" };
 
   await updateDoc(orderRef, updateData);
