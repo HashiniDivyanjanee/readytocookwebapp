@@ -52,7 +52,7 @@ export const CheckoutModal = ({ isOpen, onClose, cart, total, clearCart }) => {
     `*Total Amount: Rs. ${total.toFixed(2)}*%0A%0A` +
     `*Delivery Location:*%0A${googleMapsUrl}`;
 
-  const whatsappNumber = "94769070920";
+  const whatsappNumber = "94775407767";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
 
   try {

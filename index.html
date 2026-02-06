@@ -2,76 +2,90 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>readytocookwebapp</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
-    rel="stylesheet">
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/image/logo1.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ready To Cook</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
+        rel="stylesheet">
+
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
             scroll-behavior: smooth;
             background-color: #fff;
+            top: 0px !important;
+            position: static !important;
         }
+
+        /* Google Translate බැනර් එක සහ අනවශ්‍ය දේවල් සම්පූර්ණයෙන්ම මැකීමට */
+        .goog-te-banner-frame.skiptranslate,
+        .goog-te-banner-frame,
+        .goog-te-balloon-frame,
+        #google_translate_element {
+            display: none !important;
+        }
+
+        .skiptranslate {
+            display: none !important;
+        }
+
+        body {
+            top: 0px !important;
+        }
+
         .font-oswald {
             font-family: 'Oswald', sans-serif;
         }
+
         .font-playfair {
             font-family: 'Playfair Display', serif;
         }
+
         ::-webkit-scrollbar {
             width: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #1a1a1a;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #FF5C00;
             border-radius: 4px;
-        }
-        
-        /* Reveal on scroll animations */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-        .animate-float {
-            animation: float 4s ease-in-out infinite;
-        }
-
-        @keyframes kenBurns {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
-        }
-        .ken-burns {
-            animation: kenBurns 10s ease-in-out infinite alternate;
-        }
-        
-        /* Glassmorphism for sidebar */
-        .glass-dark {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
         }
     </style>
 </head>
 
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
+    <div id="root"></div>
+    <div id="google_translate_element"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'si,ta,en',
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+
+        function changeLanguage(langCode) {
+            var selectElement = document.querySelector('select.goog-te-combo');
+            if (selectElement) {
+                selectElement.value = langCode;
+                selectElement.dispatchEvent(new Event('change'));
+            } else {
+                setTimeout(function () {
+                    changeLanguage(langCode);
+                }, 500);
+            }
+        }
+    </script>
+    <script type="text/javascript"
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script type="module" src="/src/main.jsx"></script>
 </body>
 
 </html>

@@ -10,220 +10,277 @@ import {
 } from "firebase/firestore";
 import OrderDetailsModal from "../../components/admin/OrderDetailsModal";
 
-
-
-
-const RiderDashboard = ({ userUid }) => {
+const RiderDashboard = ({ userUid, userName }) => {
   const [myOrders, setMyOrders] = useState([]);
+  const [availableOrders, setAvailableOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const handleUpdateStatus = async (orderId, newStatus) => {
+  const handleUpdateOrderData = async (order, newStatus, paymentMethod) => {
     try {
-      const orderRef = doc(db, "orders", orderId);
-      await updateDoc(orderRef, { status: newStatus });
+      const orderRef = doc(db, "orders", order.id);
+
+      const updateData = {
+        status: newStatus,
+        paymentMethod: paymentMethod || order.paymentMethod || "Not Selected",
+      };
+
+      await updateDoc(orderRef, updateData);
+
+      const orderIdShort = order.id.slice(-5);
+
+      if (newStatus !== order.status) {
+        let msg = "";
+
+        if (newStatus === "Delivered") {
+          msg =
+            `*Ready To Cook*\n\n` +
+            `✅ *Your order #${orderIdShort} has been delivered successfully!* Enjoy your meal! 🍽️✨\n\n` +
+            `✅ *ඔබේ #${orderIdShort} ඇණවුම සාර්ථකව භාර දෙන ලදී!* ආහාර රසවිඳින්න! 🍽️✨\n\n` +
+            `✅ *உங்கள் ஆர்டர் #${orderIdShort} வெற்றிகரமாக விநியோகிக்கப்பட்டது!* உணவை மகிழ்ந்து உண்ணுங்கள்! 🍽️✨`;
+        } else if (newStatus === "Returned") {
+          msg =
+            `*Ready To Cook*\n\n` +
+            `🔄 *Your order #${orderIdShort} has been marked as Returned.* Please contact us for more info.\n\n` +
+            `🔄 *ඔබේ #${orderIdShort} ඇණවුම නැවත හරවා එවන ලදී (Returned).* වැඩි විස්තර සඳහා අපව අමතන්න.\n\n` +
+            `🔄 *உங்கள் ஆர்டர் #${orderIdShort} திரும்பப் பெறப்பட்டது (Returned).* மேலும் தகவலுக்கு எங்களைத் தொடர்பு கொள்ளவும்.`;
+        }
+
+        if (msg) sendWhatsApp(order.phone, msg);
+      }
     } catch (err) {
-      console.error("Error updating status:", err);
-      alert("Status update failed!");
+      console.error("Error updating order:", err);
     }
   };
 
+  const handleGetOrder = async (order) => {
+    try {
+      const orderRef = doc(db, "orders", order.id);
+      await updateDoc(orderRef, {
+        riderId: userUid,
+        riderName: userName || "Rider",
+        status: "Picked Up",
+      });
 
-const handleGetOrder = async (order, isCancelling = false) => {
-  const orderRef = doc(db, "orders", order.id);
-  const updateData = isCancelling 
-    ? { riderId: null, status: "Completed" } 
-    : { riderId: userUid, status: "Picked Up" };
+      const orderIdShort = order.id.slice(-5);
+      const msg =
+        `*Ready To Cook*\n\n` +
+        `🛵 *Your order #${orderIdShort} has been picked up!* Our rider is on the way.\n\n` +
+        `🛵 *ඔබේ #${orderIdShort} ඇණවුම ලබාගන්නා ලදී!* අපගේ බෙදාහැරීමේ නියෝජිතයා දැන් පැමිණෙමින් සිටී.\n\n` +
+        `🛵 *உங்கள் ஆர்டர் #${orderIdShort} எடுக்கப்பட்டது!* எங்கள் விநியோகஸ்தர் இப்போது வந்து கொண்டிருக்கிறார்.`;
 
-  await updateDoc(orderRef, updateData);
-  
-  const msg = isCancelling 
-    ? `Rider change for your order #${order.id.slice(-5)}. Please wait.`
-    : `Rider is on the way with your order #${order.id.slice(-5)}! 🛵`;
-    
-  sendWhatsApp(order.phone, msg);
-};
+      sendWhatsApp(order.phone, msg);
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  };
 
-const q = query(
-  collection(db, "orders"), 
-  where("status", "in", ["Ready", "Picked Up", "Delivered"])
-);
+  const handleCancelOrder = async (orderId) => {
+    if (window.confirm("Are you sure you want to release this order?")) {
+      try {
+        const orderRef = doc(db, "orders", orderId);
+        await updateDoc(orderRef, {
+          riderId: null,
+          status: "Completed",
+        });
+      } catch (err) {
+        console.error("Error cancelling order:", err);
+      }
+    }
+  };
 
-
+  const sendWhatsApp = (phone, message) => {
+    const formattedPhone = phone.startsWith("0")
+      ? "94" + phone.substring(1)
+      : phone;
+    const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  };
 
   useEffect(() => {
     if (!userUid) return;
-
-    const ordersRef = collection(db, "orders");
-    const q = query(ordersRef, where("riderId", "==", userUid));
-
-    const unsub = onSnapshot(
-      q,
-      (snapshot) => {
-        const orders = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setMyOrders(orders);
-      },
-      (err) => {
-        console.error("Firestore Error:", err.message);
-      }
+    const qAvailable = query(
+      collection(db, "orders"),
+      where("status", "==", "Completed"),
+    );
+    const qMyTasks = query(
+      collection(db, "orders"),
+      where("riderId", "==", userUid),
     );
 
-    return () => unsub();
+    const unsubAvailable = onSnapshot(qAvailable, (snapshot) => {
+      const available = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
+        .filter((order) => !order.riderId);
+      setAvailableOrders(available);
+    });
+
+    const unsubMyTasks = onSnapshot(qMyTasks, (snapshot) => {
+      setMyOrders(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    });
+
+    return () => {
+      unsubAvailable();
+      unsubMyTasks();
+    };
   }, [userUid]);
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-6">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-black italic uppercase">
-          My <span className="text-[#FF5C00]">Tasks</span>
+    <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-10 font-sans">
+      {/* --- SECTION: AVAILABLE ORDERS --- */}
+      <section>
+        <h1 className="text-2xl font-black italic uppercase mb-4">
+          Available <span className="text-[#FF5C00]">Orders</span> 🔔
         </h1>
-        <div className="bg-[#FF5C00] text-white px-4 py-1 rounded-full text-xs font-bold uppercase animate-pulse">
-          {myOrders.length} Orders
-        </div>
-      </div>
-
-      {myOrders.length === 0 ? (
-        <div className="bg-white p-10 rounded-[2rem] border-2 border-dashed border-gray-100 text-center text-gray-400 font-bold">
-          No orders assigned to you yet.
-        </div>
-      ) : (
-        <>
-          {/* --- MOBILE VIEW (Cards) --- */}
-          <div className="grid grid-cols-1 gap-4 md:hidden">
-            {myOrders.map((order) => (
-              <div 
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {availableOrders.length === 0 ? (
+            <p className="text-gray-400 font-bold italic">
+              Waiting for new orders...
+            </p>
+          ) : (
+            availableOrders.map((order) => (
+              <div
                 key={order.id}
-                onClick={() => setSelectedOrder(order)}
-                className="bg-white p-5 rounded-[2rem] shadow-sm border border-gray-100 space-y-4 active:scale-95 transition-transform"
+                className="bg-white p-5 rounded-[2rem] shadow-md border-2 border-orange-100"
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[10px] font-black text-gray-400 uppercase italic">Order ID</span>
-                    <p className="font-black italic text-[#FF5C00]">#{order.id.slice(-5)}</p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase italic ${
-                    order.status === 'Delivered' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-[#FF5C00]'
-                  }`}>
-                    {order.status}
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-black text-[#FF5C00]">
+                    #{order.id.slice(-5)}
+                  </span>
+                  <span className="text-[10px] bg-green-100 text-green-600 px-2 py-1 rounded-full font-bold uppercase">
+                    Ready
                   </span>
                 </div>
+                <h3 className="font-black uppercase">{order.customerName}</h3>
+                <p className="text-xs text-gray-500 mb-4 line-clamp-1">
+                  {order.address}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSelectedOrder(order)}
+                    className="flex-1 bg-gray-100 text-black py-3 rounded-xl font-black uppercase text-[10px] hover:bg-gray-200 transition-all"
+                  >
+                    Details
+                  </button>
+                  <button
+                    onClick={() => handleGetOrder(order)}
+                    className="flex-[2] bg-[#FF5C00] text-white py-3 rounded-xl font-black uppercase text-[10px] hover:bg-black transition-all"
+                  >
+                    Get Order
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
 
-                <div>
-                  <h3 className="font-black uppercase text-gray-900">{order.customerName}</h3>
-                  <p className="text-gray-500 text-xs mt-1 leading-relaxed line-clamp-2">{order.address}</p>
+      <hr className="border-gray-100" />
+
+      {/* --- SECTION: MY TASKS --- */}
+      <section>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-black italic uppercase">
+            My <span className="text-[#FF5C00]">Tasks</span> 🛵
+          </h1>
+          <div className="bg-black text-white px-4 py-1 rounded-full text-xs font-bold uppercase">
+            {myOrders.length} In Progress
+          </div>
+        </div>
+
+        {myOrders.length === 0 ? (
+          <div className="bg-gray-50 p-10 rounded-[2rem] border-2 border-dashed border-gray-200 text-center text-gray-400 font-bold">
+            No orders picked up yet.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            {myOrders.map((order) => (
+              <div
+                key={order.id}
+                className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-6"
+              >
+                <div
+                  onClick={() => setSelectedOrder(order)}
+                  className="flex-1 cursor-pointer group"
+                >
+                  <p className="font-black italic text-[#FF5C00]">
+                    #{order.id.slice(-5)} View Details
+                  </p>
+                  <h3 className="font-black uppercase text-lg">
+                    {order.customerName}
+                  </h3>
+                  <p className="text-gray-400 text-xs">{order.address}</p>
+                  <div className="mt-2 flex gap-2">
+                    <span className="bg-orange-50 text-[#FF5C00] text-[9px] px-2 py-1 rounded-md font-bold uppercase">
+                      Pay: {order.paymentMethod || "Pending"}
+                    </span>
+                    <span
+                      className={`text-[9px] px-2 py-1 rounded-md font-bold uppercase ${order.status === "Returned" ? "bg-red-100 text-red-600" : "bg-blue-100 text-blue-600"}`}
+                    >
+                      Status: {order.status}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-                  <div className="flex gap-2">
-                    {/* Call Button */}
-                    <a 
-                      href={`tel:${order.phone}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center shadow-sm"
+                <div className="flex flex-wrap items-end gap-3">
+                  {/* Payment Method */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[8px] font-black uppercase text-gray-400 ml-1">
+                      Payment Method
+                    </label>
+                    <select
+                      onChange={(e) =>
+                        handleUpdateOrderData(
+                          order,
+                          order.status,
+                          e.target.value,
+                        )
+                      }
+                      value={order.paymentMethod || ""}
+                      className="bg-white border-2 border-gray-200 text-black text-[10px] font-black uppercase p-2 rounded-lg outline-none focus:border-[#FF5C00]"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                      </svg>
-                    </a>
-                    {/* Maps Button */}
-                    <a
-                      href={order.mapLocation || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shadow-sm"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    </a>
+                      <option value="" disabled>
+                        Select
+                      </option>
+                      <option value="Cash">Cash</option>
+                      <option value="Card">Card</option>
+                      <option value="Online">Online / Koko</option>
+                    </select>
                   </div>
 
-                  <select
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      handleUpdateStatus(order.id, e.target.value);
-                    }}
-                    value={order.status}
-                    className="bg-gray-900 text-white text-[10px] font-black uppercase italic p-2 rounded-lg outline-none"
-                    onClick={(e) => e.stopPropagation()}
+                  {/* Status Dropdown + Return Option */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[8px] font-black uppercase text-gray-400 ml-1">
+                      Order Status
+                    </label>
+                    <select
+                      onChange={(e) =>
+                        handleUpdateOrderData(
+                          order,
+                          e.target.value,
+                          order.paymentMethod,
+                        )
+                      }
+                      value={order.status}
+                      className={`text-[10px] font-black uppercase p-2 rounded-lg outline-none text-white ${order.status === "Returned" ? "bg-red-600" : "bg-gray-900"}`}
+                    >
+                      <option value="Picked Up">Picked Up</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Returned">Returned 🔄</option>
+                    </select>
+                  </div>
+
+                  <button
+                    onClick={() => handleCancelOrder(order.id)}
+                    className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-red-600 hover:text-white transition-all"
                   >
-                    <option value="Assigned">Assigned</option>
-                    <option value="Picked Up">Picked Up</option>
-                    <option value="Delivered">Delivered</option>
-                  </select>
+                    Release
+                  </button>
                 </div>
               </div>
             ))}
           </div>
-
-          {/* --- DESKTOP VIEW (Table) --- */}
-          <div className="hidden md:block bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-gray-100">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-gray-900 text-white uppercase text-[10px] tracking-widest font-black italic">
-                <tr>
-                  <th className="p-6">Order</th>
-                  <th className="p-6">Customer</th>
-                  <th className="p-6">Contact</th>
-                  <th className="p-6">Status</th>
-                  <th className="p-6 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {myOrders.map((order) => (
-                  <tr
-                    key={order.id}
-                    className="hover:bg-orange-50/50 transition-all cursor-pointer group"
-                    onClick={() => setSelectedOrder(order)}
-                  >
-                    <td className="p-6 font-black italic text-gray-400 group-hover:text-[#FF5C00]">
-                      #{order.id.slice(-5)}
-                    </td>
-                    <td className="p-6">
-                      <p className="font-black uppercase text-sm leading-none mb-1">{order.customerName}</p>
-                      <p className="text-gray-400 text-[10px] font-medium uppercase tracking-tighter">{order.address}</p>
-                    </td>
-                    <td className="p-6">
-                      <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-                        <a href={`tel:${order.phone}`} className="font-black text-sm hover:text-[#FF5C00]">{order.phone}</a>
-                        <a
-                          href={order.mapLocation || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          </svg>
-                        </a>
-                      </div>
-                    </td>
-                    <td className="p-6">
-                      <span className="bg-orange-100 text-[#FF5C00] px-3 py-1 rounded-full text-[10px] font-black uppercase italic">
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="p-6 text-right" onClick={(e) => e.stopPropagation()}>
-                      <select
-                        onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
-                        value={order.status}
-                        className="bg-gray-50 border border-gray-200 text-[10px] font-black uppercase italic p-2 rounded-lg outline-none cursor-pointer focus:border-[#FF5C00]"
-                      >
-                        <option value="Assigned">Assigned</option>
-                        <option value="Picked Up">Picked Up</option>
-                        <option value="Delivered">Delivered</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
+        )}
+      </section>
 
       {selectedOrder && (
         <OrderDetailsModal

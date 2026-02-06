@@ -18,6 +18,7 @@ export const Footer = () => {
               <div className="text-white font-oswald text-4xl font-black tracking-tighter uppercase leading-none">
                 READY TO <span className="text-[#FF5C00]">COOK</span>
               </div>
+             
               <p className="text-gray-500 font-medium max-w-sm leading-relaxed text-sm">
                 The flame is our compass, the smoke is our story. Join our inner
                 circle for exclusive pitmaster secrets and weekend deals.

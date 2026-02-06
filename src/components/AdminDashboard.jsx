@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { auth, db, storage } from "../firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import ProductForm from "./admin/ProductForm";
+import OfferForm from "./admin/OfferForm";
+import ManageProducts from "./admin/ManageProducts";
+import OrderTable from "./admin/OrderTable";
+import ManageOffers from "./admin/ManageOffers";
+import ManageGallery from "./admin/ManageGallery";
+import GalleryForm from "./admin/GalleryForm";
+import RiderForm from "./admin/RiderForm";
+import OrderStats from "./admin/OrderStats";
+
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import {
   collection,
   addDoc,
@@ -13,15 +24,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 
-import ProductForm from "./admin/ProductForm";
-import OfferForm from "./admin/OfferForm";
-import ManageProducts from "./admin/ManageProducts";
-import OrderTable from "./admin/OrderTable";
-import ManageOffers from "./admin/ManageOffers";
-import ManageGallery from "./admin/ManageGallery";
-import GalleryForm from "./admin/GalleryForm";
-import RiderForm from "./admin/RiderForm";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+
 
 const AdminDashboard = () => {
   const [adminView, setAdminView] = useState("overview");
@@ -93,30 +96,29 @@ const AdminDashboard = () => {
   }, []);
 
   // --- Gallery Upload Logic ---
- const handleGalleryUpload = async (files) => {
-  setLoading(true);
-  try {
-    const uploadPromises = files.map(async (file) => {
-      const imgRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
-      await uploadBytes(imgRef, file);
-      const url = await getDownloadURL(imgRef);
+  const handleGalleryUpload = async (files) => {
+    setLoading(true);
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const imgRef = ref(storage, `gallery/${Date.now()}_${file.name}`);
+        await uploadBytes(imgRef, file);
+        const url = await getDownloadURL(imgRef);
 
-      return addDoc(collection(db, "gallery"), {
-        imageUrl: url,
-        uploadedAt: serverTimestamp(),
+        return addDoc(collection(db, "gallery"), {
+          imageUrl: url,
+          uploadedAt: serverTimestamp(),
+        });
       });
-    });
 
-    await Promise.all(uploadPromises);
+      await Promise.all(uploadPromises);
 
-    alert(`Successfully uploaded ${files.length} images!`);
-    setAdminView("manage-gallery");
-  } catch (err) {
-    alert("Gallery Error: " + err.message);
-  }
-  setLoading(false);
-};
-
+      alert(`Successfully uploaded ${files.length} images!`);
+      setAdminView("manage-gallery");
+    } catch (err) {
+      alert("Gallery Error: " + err.message);
+    }
+    setLoading(false);
+  };
 
   const handleProductUpload = async (e) => {
     e.preventDefault();
@@ -195,41 +197,40 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
+  const handleRiderUpload = async (riderData) => {
+    setLoading(true);
+    try {
+      const tempPassword = riderData.phone || "rider123";
 
- const handleRiderUpload = async (riderData) => {
-  setLoading(true);
-  try {
-    const tempPassword = riderData.phone || "rider123";
+      const res = await createUserWithEmailAndPassword(
+        auth,
+        riderData.email,
+        tempPassword,
+      );
+      const uid = res.user.uid;
 
-    const res = await createUserWithEmailAndPassword(
-      auth,
-      riderData.email,
-      tempPassword,
-    );
-    const uid = res.user.uid;
+      await setDoc(doc(db, "data", "users", "users", uid), {
+        uid: uid,
+        name: riderData.name,
+        email: riderData.email,
+        phone: riderData.phone,
+        vehicleNo: riderData.vehicleNo,
+        role: riderData.role,
+        status: "active",
+        createdAt: serverTimestamp(),
+      });
 
-    await setDoc(doc(db, "data", "users", "users", uid), {
-      uid: uid,
-      name: riderData.name,
-      email: riderData.email,
-      phone: riderData.phone,
-      vehicleNo: riderData.vehicleNo,
-      role: riderData.role,
-      status: "active",
-      createdAt: serverTimestamp(),
-    });
-
-    alert(
-      `${riderData.role.toUpperCase()} created successfully! Note: You have been logged out for security.`
-    );
-    window.location.reload();
-  } catch (err) {
-    console.error("Auth & Firestore Error: ", err);
-    alert("Error: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+      alert(
+        `${riderData.role.toUpperCase()} created successfully! Note: You have been logged out for security.`,
+      );
+      window.location.reload();
+    } catch (err) {
+      console.error("Auth & Firestore Error: ", err);
+      alert("Error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 pb-10 px-6 font-sans">
@@ -290,6 +291,11 @@ const AdminDashboard = () => {
               title="Add User"
               onClick={() => setAdminView("add-rider")}
             />
+            <DashboardCard
+              icon="📊"
+              title="Order Status"
+              onClick={() => setAdminView("order-stats")}
+            />
           </div>
         )}
 
@@ -337,7 +343,7 @@ const AdminDashboard = () => {
           />
         )}
 
-         {adminView === "manage-offers" && (
+        {adminView === "manage-offers" && (
           <ManageOffers
             offers={allOffers}
             onEdit={(o) => {
@@ -356,6 +362,8 @@ const AdminDashboard = () => {
             }
           />
         )}
+
+        {adminView === "order-stats" && <OrderStats orders={orders} />}
       </div>
     </div>
   );

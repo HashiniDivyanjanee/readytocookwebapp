@@ -7,7 +7,7 @@ export const Contact = () => {
     message: "",
   });
 
-  const WHATSAPP_NUMBER = "94769070920";
+  const WHATSAPP_NUMBER = "94775407767";
 
   const handleWhatsAppSend = (e) => {
     e.preventDefault();

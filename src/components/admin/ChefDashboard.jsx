@@ -7,11 +7,14 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+import OrderDetailsModal from "./OrderDetailsModal";
 
 const ChefDashboard = ({ userRole, userName }) => {
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
     const q = query(collection(db, "orders"));
@@ -82,26 +85,43 @@ const ChefDashboard = ({ userRole, userName }) => {
 
   const handleStatusUpdate = async (order, newStatus) => {
     const orderRef = doc(db, "orders", order.id);
-    const updateData = { status: newStatus };
+    const updateData = {
+      status: newStatus,
+      acceptedByChef: userName,
+    };
 
-    if (newStatus === "Preparing") {
-      updateData.acceptedByChef = userName;
-      updateData.acceptedAt = new Date().toISOString();
+    if (userRole === "marinate chef") {
+      updateData["sectionStatus.marinade"] = newStatus;
+    } else if (userRole === "readymade chef") {
+      updateData["sectionStatus.readymade"] = newStatus;
     }
 
-    await updateDoc(orderRef, updateData);
+    try {
+      await updateDoc(orderRef, updateData);
+      const orderIdShort = order.id.slice(-5);
+      let msg = "";
+      if (newStatus === "Preparing") {
+        msg =
+          `ඔයාගෙ ඕඩර් එක #${orderIdShort} ඇක්සෙප්ට් කරා. දැන් සූදානම් කරමින් පවතිනවා! 👨‍🍳\n\n` +
+          `Your order #${orderIdShort} has been accepted and is now being prepared!\n\n` +
+          `உங்கள் ஆர்டர் #${orderIdShort} ஏற்றுக்கொள்ளப்பட்டது, இப்போது தயார் செய்யப்படுகிறது!`;
+      } else if (newStatus === "Cancelled") {
+        msg =
+          `කණගාටුයි, ඔයාගෙ ඕඩර් එක #${orderIdShort} අපිට දැනට අවලංගු (Cancel) කිරීමට සිදු වුණා. ❌\n\n` +
+          `Sorry, we had to cancel your order #${orderIdShort} for now.\n\n` +
+          `மன்னிக்கவும், உங்கள் ஆர்டர் #${orderIdShort} தற்போது ரத்து செய்யப்பட்டுள்ளது.`;
+      } else if (newStatus === "Completed") {
+        msg =
+          `ඔයාගෙ ඕඩර් එක #${orderIdShort} සාර්ථකව සූදානම් කර අවසන්! 🍕\n\n` +
+          `Your order #${orderIdShort} has been successfully prepared!\n\n` +
+          `உங்கள் ஆர்டர் #${orderIdShort} வெற்றிகரமாக தயார் செய்யப்பட்டுவிட்டது!`;
+      }
 
-    let msg = "";
-    if (newStatus === "Preparing") {
-      msg = `ඔයාගෙ ඕඩර් එක #${order.id.slice(-5)} ඇක්සෙප්ට් කරා. දැන් සූදානම් කරමින් පවතිනවා! 👨‍🍳`;
-    } else if (newStatus === "Cancelled") {
-      msg = `කණගාටුයි, ඔයාගෙ ඕඩර් එක #${order.id.slice(-5)} අපිට දැනට අවලංගු (Cancel) කිරීමට සිදු වුණා.`;
-    } else if (newStatus === "Completed") {
-      msg = `ඔයාගෙ ඕඩර් එක #${order.id.slice(-5)} සාර්ථකව සූදානම් කර අවසන්! 🍕`;
-    }
-
-    if (msg) {
-      sendWhatsApp(order.customerPhone || order.phone, msg);
+      if (msg) {
+        sendWhatsApp(order.customerPhone || order.phone, msg);
+      }
+    } catch (error) {
+      console.error("Update Error: ", error);
     }
   };
 
@@ -135,12 +155,15 @@ const ChefDashboard = ({ userRole, userName }) => {
           {displayOrders.map((order) => (
             <div
               key={order.id}
-              className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+              className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all hover:border-orange-200"
             >
-              <div>
+              <div
+                className="flex-1 cursor-pointer w-full"
+                onClick={() => setSelectedOrder(order)}
+              >
                 <div className="flex items-center gap-2 mb-1">
-                  <p className="font-black text-[#FF5C00]">
-                    #{order.id.slice(-5)}
+                  <p className="font-black text-[#FF5C00] hover:underline">
+                    #{order.id.slice(-5)} - More Details 🔍
                   </p>
                   <span
                     className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
@@ -156,7 +179,7 @@ const ChefDashboard = ({ userRole, userName }) => {
                     {order.status}
                   </span>
                 </div>
-                <p className="text-sm font-bold uppercase">
+                <p className="text-sm font-bold uppercase text-gray-800">
                   {order.customerName}
                 </p>
                 <p className="text-xs text-gray-600">{order.phone}</p>
@@ -177,7 +200,10 @@ const ChefDashboard = ({ userRole, userName }) => {
               <div className="flex gap-2 w-full md:w-auto mt-2">
                 {userRole === "marinate chef" && order.status === "pending" && (
                   <button
-                    onClick={() => handleTransferOrder(order)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTransferOrder(order);
+                    }}
                     className="flex-1 md:flex-none bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs uppercase hover:bg-blue-700 transition-all"
                   >
                     Transfer Order 🔄
@@ -187,32 +213,32 @@ const ChefDashboard = ({ userRole, userName }) => {
                 {(order.status === "pending" ||
                   order.status === "Cancelled") && (
                   <button
-                    onClick={() => handleStatusUpdate(order, "Preparing")}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStatusUpdate(order, "Preparing");
+                    }}
                     className="flex-1 md:flex-none bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase hover:bg-gray-800 transition-all"
                   >
                     {order.status === "Cancelled" ? "Re-Accept" : "Accept"}
                   </button>
                 )}
 
-                {/* {(order.status === "pending" ||
-                  order.status === "Cancelled") && (
-                  <button
-                    onClick={() => handleStatusUpdate(order, "Preparing")}
-                    className="flex-1 md:flex-none bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase"
-                  >
-                    {order.status === "Cancelled" ? "Re-Accept" : "Accept"}
-                  </button>
-                )} */}
                 {order.status === "Preparing" && (
                   <>
                     <button
-                      onClick={() => handleStatusUpdate(order, "Cancelled")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStatusUpdate(order, "Cancelled");
+                      }}
                       className="flex-1 md:flex-none bg-red-500 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase"
                     >
                       Cancel
                     </button>
                     <button
-                      onClick={() => handleStatusUpdate(order, "Completed")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleStatusUpdate(order, "Completed");
+                      }}
                       className="flex-1 md:flex-none bg-[#FF5C00] text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase"
                     >
                       Mark Completed
@@ -229,6 +255,14 @@ const ChefDashboard = ({ userRole, userName }) => {
           ))}
         </div>
       </div>
+
+      {/* ඕඩර් එකක් තෝරාගෙන තිබේ නම් පමණක් මොඩල් එක පෙන්වන්න */}
+      {selectedOrder && (
+        <OrderDetailsModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
     </div>
   );
 };
