@@ -11,9 +11,9 @@ const LanguageModal = ({ isOpen, onClose }) => {
   };
 
   const languages = [
-    { code: "en", label: "English", sub: "Welcome", icon: "🇺🇸" },
-    { code: "si", label: "සිංහල", sub: "සාදරයෙන් පිළිගනිමු", icon: "🇱🇰" },
-    { code: "ta", label: "தமிழ்", sub: "வரவேற்கிறோம்", icon: "🇮🇳" },
+    { code: "en", label: "English", sub: "Welcome" },
+    { code: "si", label: "සිංහල", sub: "සාදරයෙන් පිළිගනිමු" },
+    { code: "ta", label: "தமிழ்", sub: "வரவேற்கிறோம்" },
   ];
 
   return (

@@ -56,14 +56,14 @@ const App = () => {
 
   useEffect(() => {
     const isLangSelected = localStorage.getItem("langSelected");
-    
-    if (!isLangSelected) {
-      const timer = setTimeout(() => {
-        setShowLanguageModal(true);
-      }, 1500);
+    setShowLanguageModal(true);
+    // if (!isLangSelected) {
+    //   const timer = setTimeout(() => {
+    //     setShowLanguageModal(true);
+    //   }, 1500); 
       
-      return () => clearTimeout(timer);
-    }
+    //   return () => clearTimeout(timer);
+    // }
   }, []); 
 
   const handleCloseLangModal = () => {
