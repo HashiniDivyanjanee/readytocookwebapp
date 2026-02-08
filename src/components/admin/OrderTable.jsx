@@ -14,7 +14,6 @@ const OrderTable = ({ orders }) => {
   const [riders, setRiders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // Search සහ Filter සඳහා State
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 

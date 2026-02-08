@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase"; // ඔබේ firebase configuration එක මෙතැනට දෙන්න
+import { db } from "../firebase";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 
 export const Gallery = ({ fullPage }) => {

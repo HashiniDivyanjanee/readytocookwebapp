@@ -95,7 +95,7 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
           </button>
         </form>
 
-        <p className="text-white/50 text-center mt-6 text-sm">
+        {/* <p className="text-white/50 text-center mt-6 text-sm">
           {isSignUp ? "Already have an account?" : "New to Ready to Cook?"}
           <button
             onClick={() => setIsSignUp(!isSignUp)}
@@ -103,7 +103,7 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
           >
             {isSignUp ? "Sign In" : "Sign Up Now"}
           </button>
-        </p>
+        </p> */}
       </div>
     </div>
   );

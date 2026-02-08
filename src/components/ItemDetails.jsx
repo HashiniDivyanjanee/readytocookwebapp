@@ -15,7 +15,7 @@ export const ItemDetails = ({ addToCart }) => {
   // States for Customization
   const [soldLevel, setSoldLevel] = useState("Low");
   const [spicyLevel, setSpicyLevel] = useState("Low");
-  const [weight, setWeight] = useState("500g"); // අලුතින් එක් කළ Weight state එක
+  const [weight, setWeight] = useState("500g");
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -27,7 +27,6 @@ export const ItemDetails = ({ addToCart }) => {
           const data = { id: docSnap.id, ...docSnap.data() };
           setItem(data);
           
-          // පවතින දත්ත තිබේ නම් ඒවා ලබා ගැනීම
           if (data.selectedSold) setSoldLevel(data.selectedSold);
           if (data.selectedSpicy) setSpicyLevel(data.selectedSpicy);
           if (data.selectedWeight) setWeight(data.selectedWeight);
@@ -65,7 +64,7 @@ export const ItemDetails = ({ addToCart }) => {
         ...item, 
         selectedSold: soldLevel, 
         selectedSpicy: spicyLevel, 
-        selectedWeight: weight // Weight එක cart එකට එක් කිරීම
+        selectedWeight: weight 
       },
       quantity
     );

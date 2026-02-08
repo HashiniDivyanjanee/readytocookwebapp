@@ -25,18 +25,19 @@ import RiderDashboard from "./components/admin/RiderDashboard";
 import { auth } from "./firebase";
 import ScrollToTop from "./components/ScrollToTop";
 import ChefDashboard from "./components/admin/ChefDashboard";
-
+import LanguageModal from "./components/LanguageModal";
 const App = () => {
   const [scrolled, setScrolled] = useState(false);
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   // Scroll logic for Navbar and Reveals
+  // 1. Scroll logic සහ Reveal Animations සඳහා useEffect එක
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -52,6 +53,23 @@ const App = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const isLangSelected = localStorage.getItem("langSelected");
+    
+    if (!isLangSelected) {
+      const timer = setTimeout(() => {
+        setShowLanguageModal(true);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []); 
+
+  const handleCloseLangModal = () => {
+    localStorage.setItem("langSelected", "true"); 
+    setShowLanguageModal(false);
+  };
 
   // Login Success Handler
   const handleLoginSuccess = async (role, user) => {
@@ -103,6 +121,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <LanguageModal isOpen={showLanguageModal} onClose={handleCloseLangModal} />
       <ScrollToTop />
       {userRole !== "rider" && (
         <Navbar
@@ -227,6 +246,7 @@ const App = () => {
         cart={cart}
         updateQuantity={updateQuantity}
         removeItem={removeItem}
+        clearCart={() => setCart([])}
       />
     </div>
   );

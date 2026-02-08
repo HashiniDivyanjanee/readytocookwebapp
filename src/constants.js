@@ -228,7 +228,7 @@ export const OFFER_SLIDES = [
 export const CHEFS = [
   {
     id: 1,
-    name: 'Sunil Perera',
+    name: 'Chef Dissanayake',
     role: 'Head Preparation Chef',
     bio: 'Our Meat Preparation Specialist carefully selects, cleans, and prepares every cut with precision. Using quality spices and strict hygiene standards, each product is made ready for you to cook with confidence.',
     image: '/image/chef/chef.jpeg',

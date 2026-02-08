@@ -167,7 +167,6 @@ const OrderDetailsModal = ({ order, onClose }) => {
                       <span className="text-[9px] bg-gray-100 px-2 py-0.5 rounded-md font-bold text-gray-500 uppercase">
                         Qty: {item.quantity}
                       </span>
-                      {/* මෙතන තමයි අයිටම් එකේ වෙයිට් එක පෙන්වන්නේ */}
                       {item.selectedWeight && (
                         <span className="text-[9px] bg-blue-100 px-2 py-0.5 rounded-md font-bold text-blue-600 uppercase">
                           Weight: {item.selectedWeight}

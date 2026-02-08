@@ -7,6 +7,7 @@ export const CartSidebar = ({
   cart,
   updateQuantity,
   removeItem,
+  clearCart,
 }) => {
   const total = cart.reduce(
     (sum, item) => sum + (Number(item.priceValue) || 0) * (item.quantity || 0),
@@ -174,7 +175,7 @@ export const CartSidebar = ({
         onClose={() => setIsCheckoutOpen(false)}
         cart={cart}
         total={total}
-        clearCart={() => {}}
+      clearCart={clearCart}
       />
     </>
   );

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 const OrderStats = ({ orders }) => {
   const [selectedDate, setSelectedDate] = useState("");
 
-  // දිනය අනුව filter කිරීම
   const filteredOrders = selectedDate
     ? orders.filter((order) => {
         const orderDate = order.createdAt?.toDate?.().toISOString().split("T")[0];
@@ -11,8 +10,8 @@ const OrderStats = ({ orders }) => {
       })
     : orders;
 
-  // Status අනුව ගණනය කිරීම
-  const getCount = (status) => filteredOrders.filter((o) => o.status === status).length;
+
+    const getCount = (status) => filteredOrders.filter((o) => o.status === status).length;
 
   const stats = [
    

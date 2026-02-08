@@ -256,7 +256,6 @@ const ChefDashboard = ({ userRole, userName }) => {
         </div>
       </div>
 
-      {/* ඕඩර් එකක් තෝරාගෙන තිබේ නම් පමණක් මොඩල් එක පෙන්වන්න */}
       {selectedOrder && (
         <OrderDetailsModal
           order={selectedOrder}

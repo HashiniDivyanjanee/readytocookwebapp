@@ -16,7 +16,6 @@ const ManageProducts = ({ products, onEdit }) => {
     }
   };
 
-  // Filter එකට mainCategory සහ category දෙකම එක් කිරීම
   const filteredProducts = products.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (item.category && item.category.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -48,7 +47,6 @@ const ManageProducts = ({ products, onEdit }) => {
               <div className="flex-1">
                 <h3 className="font-bold text-gray-800 leading-tight">{item.name}</h3>
                 
-                {/* --- පවතින Main Category සහ Sub Category පෙන්වීම --- */}
                 <div className="flex gap-1 items-center mt-1">
                   <span className="text-[9px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded uppercase font-bold tracking-wider">
                     {item.mainCategory || 'N/A'}
