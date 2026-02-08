@@ -63,7 +63,6 @@ export const CheckoutModal = ({ isOpen, onClose, cart, total, clearCart }) => {
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
 
     try {
-      // 1. Firebase එකට Save කිරීම
       await addDoc(collection(db, "orders"), {
         customerName: customerInfo.name,
         phone: customerInfo.phone,
@@ -75,16 +74,14 @@ export const CheckoutModal = ({ isOpen, onClose, cart, total, clearCart }) => {
         createdAt: serverTimestamp(),
       });
 
-      // 2. WhatsApp එකට යැවීම
       window.open(whatsappUrl, "_blank");
 
-      // 3. CART එක හිස් කිරීම (මෙය වැදගත්)
       if (clearCart) {
         clearCart();
       }
 
       alert("Order Placed Successfully!");
-      onClose(); // Modal එක වසා දැමීම
+      onClose();
     } catch (error) {
       console.error("Firebase Error: ", error);
       alert("Something went wrong. Please try again.");
