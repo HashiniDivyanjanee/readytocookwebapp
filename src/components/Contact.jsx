@@ -24,6 +24,7 @@ export const Contact = () => {
 
   return (
     <section className="bg-[#fcfcfc] min-h-screen">
+     
       {/* Page Banner */}
       <div className="relative h-[60vh] min-h-[500px] w-full flex items-center justify-center overflow-hidden bg-black">
         <div
@@ -98,14 +99,14 @@ export const Contact = () => {
                       The Address
                     </h3>
                     <p className="text-gray-200 font-bold text-lg leading-tight uppercase">
-                      <a 
-                    href="https://maps.google.com/?q=No.615+C/1/1,+Kottawa+Rd,+Thalawathugoda" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    No.615 C/1/1, Kottawa Rd, Thalawathugoda
-                  </a>
+                      <a
+                        href="https://maps.google.com/?q=No.615+C/1/1,+Kottawa+Rd,+Thalawathugoda"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-white transition-colors"
+                      >
+                        No.615 C/1/1, Kottawa Rd, Thalawathugoda
+                      </a>
                     </p>
                   </div>
                 </div>
@@ -133,11 +134,20 @@ export const Contact = () => {
                       The Hotline
                     </h3>
                     <p className="text-gray-200 font-bold text-lg uppercase">
-                       <a href="tel:+94775407767" className="hover:text-white transition-colors">+94 77 54 077 67</a>
-                     
+                      <a
+                        href="tel:+94775407767"
+                        className="hover:text-white transition-colors"
+                      >
+                        +94 77 54 077 67
+                      </a>
                     </p>
                     <p className="text-gray-200 font-bold text-lg uppercase">
-                      <a href="tel:+94705407317" className="hover:text-white transition-colors">+94 70 540 73 17</a>
+                      <a
+                        href="tel:+94705407317"
+                        className="hover:text-white transition-colors"
+                      >
+                        +94 70 540 73 17
+                      </a>
                     </p>
                   </div>
                 </div>

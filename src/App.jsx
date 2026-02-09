@@ -35,9 +35,39 @@ const App = () => {
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
 
-  // Scroll logic for Navbar and Reveals
-  // 1. Scroll logic සහ Reveal Animations සඳහා useEffect එක
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      console.log("User accepted the install prompt");
+    }
+
+    setDeferredPrompt(null);
+    setShowInstallBtn(false);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -60,14 +90,14 @@ const App = () => {
     // if (!isLangSelected) {
     //   const timer = setTimeout(() => {
     //     setShowLanguageModal(true);
-    //   }, 1500); 
-      
+    //   }, 1500);
+
     //   return () => clearTimeout(timer);
     // }
-  }, []); 
+  }, []);
 
   const handleCloseLangModal = () => {
-    localStorage.setItem("langSelected", "true"); 
+    localStorage.setItem("langSelected", "true");
     setShowLanguageModal(false);
   };
 
@@ -121,7 +151,34 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <LanguageModal isOpen={showLanguageModal} onClose={handleCloseLangModal} />
+      <LanguageModal
+        isOpen={showLanguageModal}
+        onClose={handleCloseLangModal}
+      />
+
+      {showInstallBtn && (
+        <button
+          onClick={handleInstallClick}
+          className="fixed bottom-24 right-6 z-[100] bg-[#FF5C00] text-white p-4 rounded-full shadow-2xl flex items-center gap-2 animate-bounce border-2 border-white"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+            />
+          </svg>
+          <span className="font-bold text-xs uppercase">Install App</span>
+        </button>
+      )}
+
       <ScrollToTop />
       {userRole !== "rider" && (
         <Navbar
