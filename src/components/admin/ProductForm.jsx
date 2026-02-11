@@ -1,8 +1,8 @@
 import React from "react";
 
 const CATEGORY_MAP = {
-  Marinade: ["Seafood", "Beef", "Chicken", "Fish", "Pork"],
-  Readymade: ["Mixed", "Seafood", "Beef", "Chicken", "Fish", "Pork"]
+  Marinade: ["Sea Food", "Beef", "Chicken", "Pork", "Special Offers"],
+  Readymade: ["Mixed", "Sea Food", "Beef", "Chicken",  "Pork", "Special Offers"]
 };
 
 const ProductForm = ({ loading, productData, setProductData, setProductImg, handleSubmit, isEditing }) => {
